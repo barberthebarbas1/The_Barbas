@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servicios - The Barbas</title>
+    <link rel="stylesheet" href="../css/servicios.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="page-title">
+                <i class="fas fa-scissors"></i>
+                Nuestros Servicios
+            </h1>
+            <p class="page-subtitle">Selecciona el servicio que deseas reservar</p>
+        </header>
+
+        <!-- Servicios Grid -->
+        <div class="services-grid">
+            <!-- Arreglo de Barba -->
+            <div class="service-card" data-service="Arreglo de Barba" data-price="$15.000">
+                <div class="service-icon">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <div class="service-info">
+                    <h3 class="service-name">Arreglo de Barba</h3>
+                    <p class="service-description">Corte profesional y delineado perfecto de barba para un look impecable y bien definido</p>
+                    <div class="service-details">
+                        <span class="service-duration">
+                            <i class="fas fa-clock"></i>
+                            25 min
+                        </span>
+                        <span class="service-price">$15.000</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Corte para Niños -->
+            <div class="service-card" data-service="Corte para Niños" data-price="$20.000">
+                <div class="service-icon">
+                    <i class="fas fa-child"></i>
+                </div>
+                <div class="service-info">
+                    <h3 class="service-name">Corte para Niños</h3>
+                    <p class="service-description">Corte especializado para niños menores de 10 años con atención personalizada y ambiente amigable</p>
+                    <div class="service-details">
+                        <span class="service-duration">
+                            <i class="fas fa-clock"></i>
+                            20 min
+                        </span>
+                        <span class="service-price">$20.000</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Corte de Cabello Moderno -->
+            <div class="service-card" data-service="Corte de Cabello Moderno" data-price="$25.000">
+                <div class="service-icon">
+                    <i class="fas fa-cut"></i>
+                </div>
+                <div class="service-info">
+                    <h3 class="service-name">Corte de Cabello Moderno</h3>
+                    <p class="service-description">Corte contemporáneo con degradados precisos realizados con hojillas o guías 0, incluye limpieza de cejas</p>
+                    <div class="service-details">
+                        <span class="service-duration">
+                            <i class="fas fa-clock"></i>
+                            35 min
+                        </span>
+                        <span class="service-price">$25.000</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cortes Clásicos -->
+            <div class="service-card" data-service="Cortes Clásicos" data-price="$22.000">
+                <div class="service-icon">
+                    <i class="fas fa-scissors"></i>
+                </div>
+                <div class="service-info">
+                    <h3 class="service-name">Cortes Clásicos</h3>
+                    <p class="service-description">Cortes tradicionales de barbería con técnicas clásicas usando peines o guías 0.5, 1, 2, 3...</p>
+                    <div class="service-details">
+                        <span class="service-duration">
+                            <i class="fas fa-clock"></i>
+                            30 min
+                        </span>
+                        <span class="service-price">$22.000</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Corte de Cabello + Barba -->
+            <div class="service-card" data-service="Corte de Cabello + Barba" data-price="$33.000">
+                <div class="service-icon">
+                    <i class="fas fa-cut"></i>
+                </div>
+                <div class="service-info">
+                    <h3 class="service-name">Corte de Cabello + Barba</h3>
+                    <p class="service-description">Servicio completo: corte moderno con degradados realizados con navaja o guías + delineado profesional de barba</p>
+                    <div class="service-details">
+                        <span class="service-duration">
+                            <i class="fas fa-clock"></i>
+                            50 min
+                        </span>
+                        <span class="service-price">$33.000</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Corte Clásico + Barba -->
+            <div class="service-card" data-service="Corte Clásico + Barba" data-price="$30.000">
+                <div class="service-icon">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <div class="service-info">
+                    <h3 class="service-name">Corte Clásico + Barba</h3>
+                    <p class="service-description">Combinación perfecta: corte de cabello clásico tradicional más delineado y arreglo profesional de barba</p>
+                    <div class="service-details">
+                        <span class="service-duration">
+                            <i class="fas fa-clock"></i>
+                            45 min
+                        </span>
+                        <span class="service-price">$30.000</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Corte de Cabello + Diseño -->
+            <div class="service-card" data-service="Corte de Cabello + Diseño" data-price="$28.000">
+                <div class="service-icon">
+                    <i class="fas fa-paint-brush"></i>
+                </div>
+                <div class="service-info">
+                    <h3 class="service-name">Corte de Cabello + Diseño</h3>
+                    <p class="service-description">Corte de cabello personalizado más cualquier tipo de diseño artístico a rayas para un estilo único</p>
+                    <div class="service-details">
+                        <span class="service-duration">
+                            <i class="fas fa-clock"></i>
+                            40 min
+                        </span>
+                        <span class="service-price">$28.000</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Depilación de Cejas -->
+            <div class="service-card" data-service="Depilación de Cejas" data-price="$4.000">
+                <div class="service-icon">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <div class="service-info">
+                    <h3 class="service-name">Depilación de Cejas</h3>
+                    <p class="service-description">Perfilado y depilación precisa de cejas para definir y realzar la expresión de tu rostro</p>
+                    <div class="service-details">
+                        <span class="service-duration">
+                            <i class="fas fa-clock"></i>
+                            10 min
+                        </span>
+                        <span class="service-price">$4.000</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lavado de Cabello -->
+            <div class="service-card" data-service="Lavado de Cabello" data-price="$8.000">
+                <div class="service-icon">
+                    <i class="fas fa-shower"></i>
+                </div>
+                <div class="service-info">
+                    <h3 class="service-name">Lavado de Cabello</h3>
+                    <p class="service-description">Lavado profundo y relajante con productos premium para limpiar y revitalizar tu cabello</p>
+                    <div class="service-details">
+                        <span class="service-duration">
+                            <i class="fas fa-clock"></i>
+                            15 min
+                        </span>
+                        <span class="service-price">$8.000</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Limpieza Facial -->
+            <div class="service-card" data-service="Limpieza Facial" data-price="$45.000">
+                <div class="service-icon">
+                    <i class="fas fa-spa"></i>
+                </div>
+                <div class="service-info">
+                    <h3 class="service-name">Limpieza Facial</h3>
+                    <p class="service-description">Tratamiento facial completo: vapor, exfoliación, extracción de puntos negros, mascarilla, hidratación y masaje</p>
+                    <div class="service-details">
+                        <span class="service-duration">
+                            <i class="fas fa-clock"></i>
+                            60 min
+                        </span>
+                        <span class="service-price">$45.000</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mascarilla Negra -->
+            <div class="service-card" data-service="Mascarilla Negra" data-price="$20.000">
+                <div class="service-icon">
+                    <i class="fas fa-mask"></i>
+                </div>
+                <div class="service-info">
+                    <h3 class="service-name">Mascarilla Negra</h3>
+                    <p class="service-description">Aplicación de mascarilla negra purificante para eliminar impurezas y puntos negros del rostro</p>
+                    <div class="service-details">
+                        <span class="service-duration">
+                            <i class="fas fa-clock"></i>
+                            25 min
+                        </span>
+                        <span class="service-price">$20.000</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Depilación Nasal y Oídos -->
+            <div class="service-card" data-service="Depilación Nasal y Oídos" data-price="$22.000">
+                <div class="service-icon">
+                    <i class="fas fa-head-side-mask"></i>
+                </div>
+                <div class="service-info">
+                    <h3 class="service-name">Depilación Nasal y Oídos</h3>
+                    <p class="service-description">Depilación cuidadosa y profesional de vello nasal y de oídos para una apariencia pulcra y cuidada</p>
+                    <div class="service-details">
+                        <span class="service-duration">
+                            <i class="fas fa-clock"></i>
+                            20 min
+                        </span>
+                        <span class="service-price">$22.000</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Servicio Seleccionado -->
+        <div class="selected-service" id="selectedService" style="display: none;">
+            <div class="selection-summary">
+                <h3>Servicio Seleccionado:</h3>
+                <div class="summary-content">
+                    <span class="selected-name" id="selectedName"></span>
+                    <span class="selected-price" id="selectedPrice"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de Navegación -->
+        <div class="navigation-buttons">
+            <button class="btn btn-secondary" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i>
+                Volver
+            </button>
+            <button class="btn btn-primary" id="btnContinue" disabled>
+                Continuar
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="../js/servicios.js"></script>
+</body>
+</html>

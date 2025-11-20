@@ -1,0 +1,622 @@
+/* Variables CSS para colores monocromo */
+:root {
+    --black: #000000;
+    --white: #ffffff;
+    --gray-very-dark: rgba(20, 20, 20, 0.8);
+    --gray-dark: rgba(30, 30, 30, 0.8);
+    --gray-medium: #666666;
+    --gray-light: #999999;
+    --gray-very-light: #cccccc;
+    --accent-green: #4c93af;
+    
+    /* Transparencias blancas */
+    --white-subtle: rgba(255, 255, 255, 0.03);
+    --white-hover: rgba(255, 255, 255, 0.05);
+    --white-focus: rgba(255, 255, 255, 0.08);
+    --white-border: rgba(255, 255, 255, 0.1);
+    --white-border-highlight: rgba(255, 255, 255, 0.15);
+    --white-border-hover: rgba(255, 255, 255, 0.2);
+    --white-border-active: rgba(255, 255, 255, 0.3);
+    --white-placeholder: rgba(255, 255, 255, 0.5);
+    
+    /* Transparencias negras */
+    --black-overlay: rgba(0, 0, 0, 0.6);
+    --black-sidebar: rgba(0, 0, 0, 0.95);
+    --black-menu: rgba(0, 0, 0, 0.98);
+    
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reset y configuración base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: var(--black);
+    color: var(--white);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px 0;
+}
+
+.page-title {
+    font-size: 2.5rem;
+    color: var(--white);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.page-title i {
+    color: var(--accent-green);
+    font-size: 2.2rem;
+}
+
+.page-subtitle {
+    font-size: 1.1rem;
+    color: var(--gray-light);
+    font-weight: 300;
+}
+
+/* Información del servicio */
+.service-info {
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.service-card {
+    background: var(--gray-dark);
+    padding: 20px 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px var(--black-overlay);
+    border: 2px solid var(--white-border);
+    text-align: center;
+    min-width: 300px;
+}
+
+.service-card h3 {
+    color: var(--gray-light);
+    font-size: 1rem;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.service-card p {
+    font-size: 1.3rem;
+    color: var(--white);
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.service-price {
+    font-size: 1.5rem;
+    color: var(--accent-green);
+    font-weight: 700;
+}
+
+/* Grid de barberos */
+.barbers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+    flex: 1;
+}
+
+/* Tarjetas de barberos */
+.barber-card {
+    background: var(--gray-dark);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px var(--black-overlay);
+    transition: var(--transition-smooth);
+    cursor: pointer;
+    border: 3px solid var(--white-border);
+    position: relative;
+}
+
+.barber-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 40px var(--black-overlay);
+    border-color: var(--white-border-hover);
+    background: var(--white-hover);
+}
+
+.barber-card.selected {
+    border-color: var(--accent-green);
+    transform: translateY(-5px);
+    box-shadow: 0 12px 35px var(--black-overlay);
+    background: var(--white-focus);
+}
+
+.barber-card.selected::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--accent-green);
+    z-index: 1;
+}
+
+/* Imagen del barbero */
+.barber-image {
+    position: relative;
+    height: 250px;
+    overflow: hidden;
+}
+
+.barber-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition-smooth);
+}
+
+.barber-card:hover .barber-image img {
+    transform: scale(1.05);
+}
+
+.barber-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: var(--accent-gold);
+    color: var(--white);
+    padding: 5px 12px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);
+}
+
+/* Información del barbero */
+.barber-info {
+    padding: 25px;
+}
+
+.barber-name {
+    font-size: 1.4rem;
+    color: var(--white);
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+
+.barber-specialty {
+    color: var(--accent-green);
+    font-weight: 600;
+    margin-bottom: 5px;
+    font-size: 1rem;
+}
+
+.barber-experience {
+    color: var(--gray-light);
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+    font-style: italic;
+}
+
+.barber-description {
+    margin-bottom: 20px;
+}
+
+.barber-description p {
+    color: var(--gray-very-light);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* Servicios del barbero */
+.barber-services {
+    border-top: 2px solid var(--secondary-cream);
+    padding-top: 15px;
+}
+
+.barber-services h4 {
+    color: var(--medium-gray);
+    font-size: 1rem;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.services-count {
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+}
+
+.loading {
+    color: var(--gray-light);
+    font-style: italic;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+.service-badge {
+    display: inline-block;
+    background: var(--white-hover);
+    color: var(--white);
+    border: 1px solid var(--white-border);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    margin: 2px;
+    font-weight: 500;
+}
+
+/* Resumen de selección */
+.selected-barber {
+    margin: 30px 0;
+    animation: slideDown 0.4s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.selection-summary {
+    background: var(--accent-green);
+    color: var(--white);
+    padding: 20px 30px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 6px 25px var(--black-overlay);
+}
+
+.selection-summary h3 {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.summary-content {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.summary-content > div {
+    background: var(--white-border-hover);
+    padding: 10px 15px;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+}
+
+.summary-content strong {
+    display: block;
+    font-size: 0.9rem;
+    margin-bottom: 3px;
+    opacity: 0.9;
+}
+
+.summary-content span {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* Botones de navegación */
+.navigation-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 30px;
+    gap: 20px;
+}
+
+.btn {
+    padding: 15px 30px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    min-width: 140px;
+    justify-content: center;
+}
+
+.btn-primary {
+    background: var(--accent-green);
+    color: var(--white);
+    box-shadow: 0 4px 15px var(--black-overlay);
+}
+
+.btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px var(--black-overlay);
+    background: #45a049;
+}
+
+.btn-primary:disabled {
+    background: var(--gray-medium);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-secondary {
+    background: var(--gray-dark);
+    color: var(--white);
+    border: 2px solid var(--white-border);
+    box-shadow: 0 4px 15px var(--black-overlay);
+}
+
+.btn-secondary:hover {
+    background: var(--white-hover);
+    border-color: var(--white-border-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px var(--black-overlay);
+}
+
+/* Loading Overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--black-sidebar);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.loading-spinner {
+    text-align: center;
+    color: var(--white);
+}
+
+.loading-spinner i {
+    font-size: 3rem;
+    color: var(--accent-green);
+    margin-bottom: 20px;
+    display: block;
+}
+
+.loading-spinner p {
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .page-title {
+        font-size: 2rem;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .page-title i {
+        font-size: 1.8rem;
+    }
+    
+    .barbers-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .barber-image {
+        height: 200px;
+    }
+    
+    .service-card {
+        min-width: auto;
+        width: 100%;
+        padding: 15px 20px;
+    }
+    
+    .summary-content {
+        flex-direction: column;
+        text-align: left;
+    }
+    
+    .navigation-buttons {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .btn {
+        width: 100%;
+        padding: 12px 25px;
+    }
+}
+
+@media (max-width: 480px) {
+    .barber-info {
+        padding: 20px;
+    }
+    
+    .barber-name {
+        font-size: 1.2rem;
+    }
+    
+    .page-title {
+        font-size: 1.7rem;
+    }
+    
+    .service-card {
+        padding: 12px 15px;
+    }
+    
+    .service-card p {
+        font-size: 1.1rem;
+    }
+    
+    .service-price {
+        font-size: 1.3rem;
+    }
+}
+
+/* Animaciones adicionales */
+.barber-card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.barber-card:nth-child(1) { animation-delay: 0.1s; }
+.barber-card:nth-child(2) { animation-delay: 0.2s; }
+.barber-card:nth-child(3) { animation-delay: 0.3s; }
+.barber-card:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Estados de hover mejorados */
+.barber-card:hover .barber-name {
+    color: var(--gray-very-light);
+}
+
+.barber-card:hover .barber-badge {
+    transform: scale(1.05);
+}
+
+/* Pantalla de error cuando no hay servicio */
+.no-service-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: var(--black);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+}
+
+.error-container {
+    background: var(--gray-dark);
+    padding: 40px 30px;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px var(--black-overlay);
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+    border: 3px solid var(--white-border);
+}
+
+.error-icon {
+    margin-bottom: 25px;
+}
+
+.error-icon i {
+    font-size: 4rem;
+    color: #f39c12;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+.error-title {
+    color: var(--white);
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.error-message {
+    color: var(--gray-very-light);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.error-actions {
+    margin-top: 20px;
+}
+
+.error-actions .btn {
+    font-size: 1.1rem;
+    padding: 12px 25px;
+}
+
+/* Responsive para pantalla de error */
+@media (max-width: 480px) {
+    .error-container {
+        padding: 30px 20px;
+    }
+    
+    .error-icon i {
+        font-size: 3rem;
+    }
+    
+    .error-title {
+        font-size: 1.3rem;
+    }
+    
+    .error-message {
+        font-size: 0.95rem;
+    }
+}
+
+/* Scroll suave */
+html {
+    scroll-behavior: smooth;
+}
