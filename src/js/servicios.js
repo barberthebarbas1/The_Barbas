@@ -319,8 +319,8 @@ function goBack() {
     localStorage.removeItem('servicePrice');
     localStorage.removeItem('serviceSelection');
     
-    console.log('Navegando hacia atrás...');
-    showNotification('Funcionalidad de navegación hacia atrás pendiente', 'info');
+    // Redirigir al index
+    window.location.href = '../index.html';
 }
 
 // Mostrar notificaciones al usuario
