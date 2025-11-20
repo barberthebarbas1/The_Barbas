@@ -1,12 +1,149 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio</title>
-</head>
-<body>
+<!doctype html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<title>The Barbas</title>
+		<link rel="stylesheet" href="/src/css/index.css" />
+	</head>
+	<body>
+		<header>
+			<nav>
+				<div class="logo">⚜ The Barbas</div>
+				<button class="hamburger" id="hamburger" aria-label="Menú">
+					<span></span>
+					<span></span>
+					<span></span>
+				</button>
+				<ul class="nav-links" id="navLinks">
+					<li><a href="#inicio">Inicio</a></li>
+					<li><a href="#servicios">Servicios</a></li>
+					<li><a href="#productos">Productos</a></li>
+					<li><a href="#contacto">Contacto</a></li>
+				</ul>
+			</nav>
+		</header>
+		<main class="container">
+			<section class="carousel" aria-label="Galería de la barbería">
+				<div class="carousel__track-container">
+					<ul class="carousel__track">
+						<li class="carousel__slide" data-index="0">
+							<figure>
+								<img src="img/Corte.jpg" alt="Corte clásico masculino" loading="lazy"/>
+								<!-- Texto especial para la primera imagen -->
+								<div class="hero-text" aria-hidden="true">CORTES PRECISOS Y ESTETICOS</div>
+							</figure>
+						</li>
+						<li class="carousel__slide" data-index="1">
+							<figure>
+								<img src="img/Productos.jpg" loading="lazy"/>
+								<!-- Texto especial para la segunda imagen -->
+								<div class="hero-text" aria-hidden="true">PRODUCTOS DE ALTA CALIDAD</div>
+							</figure>
+						</li>
+						<li class="carousel__slide" data-index="2">
+							<figure>
+								<img src="img/Sitio3.jpg" loading="lazy"/>
+								<!-- Texto especial para la tercera imagen -->
+								<div class="hero-text" aria-hidden="true">COMODIDAD Y CONFORT</div>
+							</figure>
+						</li>
+						<li class="carousel__slide" data-index="3">
+							<figure>
+								<img src="img/fondo(1).jpg" loading="lazy"/>
+								<!-- Texto especial para la cuarta imagen -->
+								<div class="hero-text" aria-hidden="true">¿QUE ESTAS ESPERANDO PARA VENIR? Te esperamos en Av12 # 9 - 76 Barrio Llano, Cucuta</div>
+							</figure>
+						</li>
 
-    
-</body>
+					</ul>
+				</div>
+				<div class="carousel__nav" aria-hidden="false">
+					<button class="carousel__indicator" data-slide-to="0" aria-label="Ir a la imagen 1"></button>
+					<button class="carousel__indicator" data-slide-to="1" aria-label="Ir a la imagen 2"></button>
+					<button class="carousel__indicator" data-slide-to="2" aria-label="Ir a la imagen 3"></button>
+					<button class="carousel__indicator" data-slide-to="3" aria-label="Ir a la imagen 4"></button>
+
+				</div>
+			</div>
+			</section>
+			<!-- CTA debajo del carrusel -->
+			<div class="cta-wrap">
+				<a href="#" class="cta-btn" id="start-booking" role="button">EMPEZAR RESERVACION <span class="cta-arrow">▶</span></a>
+			</div>
+
+			<!-- Sección de productos (4 tarjetas) -->
+			<section class="products" aria-label="Productos destacados">
+					<header class="products-header">
+						<h2 class="products-title">PRODUCTOS QUE OFRECEMOS</h2>
+						<p class="products-lead">En THE BARBAS queremos cuidar tu pelo y estetica por eso te ofrecemos productos de alta calidad a precios accesibles.</p>
+						<p class="products-lead">Adquiere ya tus productos en nuestro punto fisico</p>
+					</header>
+				<div class="products-grid">
+					<!-- Card 1 -->
+					<article class="product-card">
+						<img class="product-media" src="img/Crema Moldeadora.jfif" alt="Producto 1" loading="lazy" />
+						<div class="product-body">
+							<h3 class="product-title">Crema Moldeadora</h3>
+							<div class="product-price">$ --</div>
+						</div>
+					</article>
+					<!-- Card 2 -->
+					<article class="product-card">
+						<img class="product-media" src="img/Aceites de pelo.jfif" alt="Producto 2" loading="lazy" />
+						<div class="product-body">
+							<h3 class="product-title">Aceites para tratamiento de pelo</h3>
+							<div class="product-price">$ --</div>
+						</div>
+					</article>
+					<!-- Card 3 -->
+					<article class="product-card">
+						<img class="product-media" src="img/Tratamientos de pelo.jfif" alt="Producto 3" loading="lazy" />
+						<div class="product-body">
+							<h3 class="product-title">Tratamientos de pelo</h3>
+							<div class="product-price">$ --</div>
+						</div>
+					</article>
+					<!-- Card 4 -->
+					<article class="product-card">
+						<img class="product-media" src="img/Juego de herramientas.jfif" alt="Producto 4" loading="lazy" />
+						<div class="product-body">
+							<h3 class="product-title">Juego de herramientas</h3>
+							<div class="product-price">$ --</div>
+						</div>
+					</article>
+				</div>
+				<!-- Acción: Más información -->
+				<div class="products-actions">
+					<a href="#productos" class="products-more-btn" role="button">Ver más productos</a>
+				</div>
+			</section>
+		</main>
+
+		<!-- Footer profesional -->
+		<footer class="site-footer">
+			<div class="footer-inner">
+				<div class="col footer-brand">
+					<div class="brand-logo">⚜ THE BARBAS</div>
+					<p>Cuidamos y estilizamos tu imagen. Confía en nuestro equipo para un servicio profesional y detallista.</p>
+				</div>
+				<div class="col footer-contact">
+					<h4>Contacto</h4>
+					<ul>
+						<li>Av12 # 9 - 76 Barrio Llano, Cucuta</li>
+						<li>321 7917351</li>
+					</ul>
+				</div>
+				<div class="col footer-news">
+					<div class="socials">
+						<a href="https://www.instagram.com/barber.the.barbas?igsh=ZHRmeHc4OThmMDFm" class="social-link" aria-label="instagram">Instagram</a>
+						<a href="#" class="social-link" aria-label="facebook">Facebook</a>
+						<a href="https://wa.me/573217917351" class="social-link" aria-label="whatsapp">WhatsApp</a>
+					</div>
+				</div>
+			</div>
+		</footer>
+
+		<script src="/src/js/index.js" defer></script>
+	</body>
 </html>
