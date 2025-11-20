@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servicios VIP - The Barbas</title>
+    <link rel="stylesheet" href="../css/vip.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header VIP -->
+        <header class="header">
+            <div class="vip-crown">
+                <i class="fas fa-crown"></i>
+            </div>
+            <h1 class="page-title">
+                Servicios VIP
+                <span class="exclusive-badge">Exclusivo</span>
+            </h1>
+            <p class="page-subtitle">Experiencia premium para clientes especiales</p>
+        </header>
+
+        <!-- Servicios VIP Grid -->
+        <div class="services-grid">
+            <!-- VIP Corte + Whiskey/Ron -->
+            <div class="service-card vip-card" data-service="VIP Corte + Whiskey" data-price="$68.000">
+                <div class="vip-ribbon">
+                    <span>VIP</span>
+                </div>
+                <div class="service-icon">
+                    <i class="fas fa-glass-whiskey"></i>
+                </div>
+                <div class="service-info">
+                    <h3 class="service-name">VIP Corte + Whiskey</h3>
+                    <p class="service-description">Corte de cabello premium mientras disfrutas de whiskey o ron de alta calidad en un ambiente exclusivo</p>
+                    <div class="service-details">
+                        <span class="service-duration">
+                            <i class="fas fa-clock"></i>
+                            150 min
+                        </span>
+                        <span class="service-price">$68.000</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Corte Premium -->
+            <div class="service-card vip-card" data-service="Corte Premium" data-price="$50.000">
+                <div class="vip-ribbon">
+                    <span>Premium</span>
+                </div>
+                <div class="service-icon">
+                    <i class="fas fa-cut"></i>
+                </div>
+                <div class="service-info">
+                    <h3 class="service-name">Corte Premium</h3>
+                    <p class="service-description">Corte de cabello profesional con técnicas avanzadas seguido de un relajante lavado de cabello con productos premium</p>
+                    <div class="service-details">
+                        <span class="service-duration">
+                            <i class="fas fa-clock"></i>
+                            70 min
+                        </span>
+                        <span class="service-price">$50.000</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Corte + Barba Premium -->
+            <div class="service-card vip-card" data-service="Corte + Barba Premium" data-price="$65.000">
+                <div class="vip-ribbon">
+                    <span>Premium</span>
+                </div>
+                <div class="service-icon">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <div class="service-info">
+                    <h3 class="service-name">Corte + Barba Premium</h3>
+                    <p class="service-description">Servicio completo premium: corte de cabello profesional con delineado y arreglo de barba usando técnicas exclusivas</p>
+                    <div class="service-details">
+                        <span class="service-duration">
+                            <i class="fas fa-clock"></i>
+                            120 min
+                        </span>
+                        <span class="service-price">$65.000</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Domicilios House -->
+            <div class="service-card vip-card" data-service="Domicilios House" data-price="$70.000">
+                <div class="vip-ribbon">
+                    <span>A Domicilio</span>
+                </div>
+                <div class="service-icon">
+                    <i class="fas fa-home"></i>
+                </div>
+                <div class="service-info">
+                    <h3 class="service-name">Domicilios House</h3>
+                    <p class="service-description">Servicio premium a domicilio: corte de cabello profesional y peinado en la comodidad de tu hogar u oficina</p>
+                    <div class="service-details">
+                        <span class="service-duration">
+                            <i class="fas fa-clock"></i>
+                            240 min
+                        </span>
+                        <span class="service-price">$70.000</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Barba Premium -->
+            <div class="service-card vip-card" data-service="Barba Premium" data-price="$25.000">
+                <div class="vip-ribbon">
+                    <span>Premium</span>
+                </div>
+                <div class="service-icon">
+                    <i class="fas fa-beard"></i>
+                </div>
+                <div class="service-info">
+                    <h3 class="service-name">Barba Premium</h3>
+                    <p class="service-description">Delineado profesional de barba con técnicas especializadas seguido de lavado premium y tratamiento hidratante</p>
+                    <div class="service-details">
+                        <span class="service-duration">
+                            <i class="fas fa-clock"></i>
+                            70 min
+                        </span>
+                        <span class="service-price">$25.000</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Servicio VIP Seleccionado -->
+        <div class="selected-service" id="selectedService" style="display: none;">
+            <div class="selection-summary vip-summary">
+                <h3>Servicio VIP Seleccionado:</h3>
+                <div class="summary-content">
+                    <span class="selected-name" id="selectedName"></span>
+                    <span class="selected-price" id="selectedPrice"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ventajas VIP -->
+        <div class="vip-benefits">
+            <h3><i class="fas fa-star"></i> Beneficios Exclusivos VIP</h3>
+            <div class="benefits-grid">
+                <div class="benefit-item">
+                    <i class="fas fa-crown"></i>
+                    <span>Atención Personalizada</span>
+                </div>
+                <div class="benefit-item">
+                    <i class="fas fa-glass-cheers"></i>
+                    <span>Bebidas Premium</span>
+                </div>
+                <div class="benefit-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Sin Esperas</span>
+                </div>
+                <div class="benefit-item">
+                    <i class="fas fa-home"></i>
+                    <span>Servicio a Domicilio</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de Navegación -->
+        <div class="navigation-buttons">
+            <button class="btn btn-secondary" onclick="goBackToServices()">
+                <i class="fas fa-arrow-left"></i>
+                Servicios Regulares
+            </button>
+            <button class="btn btn-primary btn-vip-continue" id="btnContinue" disabled>
+                Continuar VIP
+                <i class="fas fa-crown"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="../js/vip.js"></script>
+</body>
+</html>

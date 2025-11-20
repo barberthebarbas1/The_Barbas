@@ -398,8 +398,19 @@ if (!document.querySelector('#notification-styles')) {
     document.head.appendChild(styles);
 }
 
+// Función para ir a servicios VIP
+function goToVipServices() {
+    // Limpiar selección actual de servicios regulares
+    clearServiceSelection();
+    showAllServiceCards();
+    
+    // Navegar a la página VIP
+    window.location.href = 'vip.html';
+}
+
 // Hacer funciones globales para acceso desde HTML
 window.goBack = goBack;
+window.goToVipServices = goToVipServices;
 
 // Exportar funciones para uso externo si es necesario
 window.ServicesApp = {
