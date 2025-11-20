@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos - Barbería Premium</title>
+    <link rel="stylesheet" href="css/products.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">⛜ Barbería Premium</div>
+            <button class="hamburger" id="hamburger" aria-label="Menú">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#inicio">Inicio</a></li>
+                <li><a href="#servicios">Servicios</a></li>
+                <li><a href="#productos">Productos</a></li>
+                <li><a href="#contacto">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Productos Premium</h1>
+        <p>Descubre nuestra colección exclusiva de productos profesionales para el cuidado masculino</p>
+    </section>
+
+    <!-- Contenedor principal con aside y productos -->
+    <div class="main-container">
+        <!-- Botón para abrir filtros en móvil -->
+        <button class="mobile-filter-toggle" id="mobileFilterToggle">
+            <span>☰</span> Filtros
+        </button>
+
+        <!-- Aside - Filtros -->
+        <aside class="filters-sidebar" id="filtersSidebar">
+            <div class="filters-wrapper">
+                <div class="filters-header-mobile">
+                    <h3>Filtros</h3>
+                    <button class="close-filters" id="closeFilters">×</button>
+                </div>
+
+                <!-- Barra de búsqueda -->
+                <div class="search-box">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Buscar productos...">
+                    <span class="search-icon">⌕</span>
+                </div>
+
+                <!-- Filtro por Categorías -->
+                <div class="filter-box">
+                    <h3 class="filter-box-title">Categorías</h3>
+                    <div class="filter-list">
+                        <button class="filter-btn active" data-category="todos">Todos</button>
+                        <button class="filter-btn" data-category="cera">Cera</button>
+                        <button class="filter-btn" data-category="gel">Gel</button>
+                        <button class="filter-btn" data-category="pomada">Pomada</button>
+                        <button class="filter-btn" data-category="crema">Crema</button>
+                        <button class="filter-btn" data-category="aceites">Aceites</button>
+                        <button class="filter-btn" data-category="barba">Barba</button>
+                        <button class="filter-btn" data-category="cabello">Cabello</button>
+                        <button class="filter-btn" data-category="mascarilla">Mascarilla</button>
+                        <button class="filter-btn" data-category="lociones">Lociones</button>
+                        <button class="filter-btn" data-category="maquinas">Maquinas</button>
+                        <button class="filter-btn" data-category="accesorios">Accesorios</button>
+                    </div>
+                </div>
+
+                <!-- Filtro por Precio -->
+                <div class="filter-box">
+                    <h3 class="filter-box-title">Rango de Precio</h3>
+                    <div class="price-filter">
+                        <label class="price-checkbox-item">
+                            <input type="checkbox" name="price-range" value="0-15">
+                            <span class="checkbox-label">$0 - $15</span>
+                        </label>
+                        <label class="price-checkbox-item">
+                            <input type="checkbox" name="price-range" value="15-30">
+                            <span class="checkbox-label">$15 - $30</span>
+                        </label>
+                        <label class="price-checkbox-item">
+                            <input type="checkbox" name="price-range" value="30-50">
+                            <span class="checkbox-label">$30 - $50</span>
+                        </label>
+                        <label class="price-checkbox-item">
+                            <input type="checkbox" name="price-range" value="50-100">
+                            <span class="checkbox-label">$50 - $100</span>
+                        </label>
+                        <label class="price-checkbox-item">
+                            <input type="checkbox" name="price-range" value="100+">
+                            <span class="checkbox-label">$100+</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Grid de Productos -->
+        <main class="products-container">
+            <div class="products-grid">
+            
+            <!-- Producto 1 -->
+            <div class="product-card" data-item-type="producto">
+                <div class="product-image">
+                    <img src="img/WhatsApp Image 2025-11-20 at 7.56.29 AM.jpeg" alt="Polvo para peinar Styling Powder">
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Cera</div>
+                    <h3 class="product-name">STYLING POWDER</h3>
+                    <p class="product-description">Cera en polvo.</p>
+                    <div class="product-description">30g</div>
+                    <div class="product-footer">
+                        <span class="product-price">$</span>
+                        <button class="add-to-cart">Añadir</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Producto 2 -->
+            <div class="product-card" data-item-type="producto">
+                <div class="product-image">
+                    <img src="img/WhatsApp Image 2025-11-20 at 7.56.30 AM.jpeg" alt="Cera para barba">
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Cera</div>
+                    <h3 class="product-name">CERA PARA BARBA</h3>
+                    <p class="product-description">Ideal para cubrir espacios vacios.</p>
+                    <div class="product-description">100g</div>
+                    <div class="product-footer">
+                        <span class="product-price">$</span>
+                        <button class="add-to-cart">Añadir</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 3 -->
+            <div class="product-card" data-item-type="producto">
+                <div class="product-image">
+                    <img src="img/WhatsApp Image 2025-11-20 at 7.56.31 AM.jpeg" alt="Gel fijador">
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Gel</div>
+                    <h3 class="product-name">STYLING GEL</h3>
+                    <p class="product-description">Gel fijador clasico, fijacion fuerte</p>
+                    <div class="product-description">500g</div>
+                    <div class="product-footer">
+                        <span class="product-price">$</span>
+                        <button class="add-to-cart">Añadir</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 4 -->
+            <div class="product-card" data-item-type="producto">
+                <div class="product-image">
+                    <img src="img/WhatsApp Image 2025-11-20 at 7.56.32 AM.jpeg" alt="Lapiz para barba">
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Barba</div>
+                    <h3 class="product-name">BLACK WELL-DEFINED</h3>
+                    <p class="product-description"><b>Beard pen - lapiz para barba</b></p>
+                    <div class="product-footer">
+                        <span class="product-price">$</span>
+                        <button class="add-to-cart">Añadir</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 5 -->
+            <div class="product-card" data-item-type="producto">
+                <div class="product-image">
+                    <img src="img/WhatsApp Image 2025-11-20 at 7.56.33 AM.jpeg" alt="peines de corte profesional">
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Accesorios</div>
+                    <h3 class="product-name">PEINES DE CORTE PROFECIONAL</h3>
+                    <p class="product-description">Peines profesionales de barbero.</p>
+                    <div class="product-footer">
+                        <span class="product-price">$</span>
+                        <button class="add-to-cart">Añadir</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 6 -->
+            <div class="product-card" data-item-type="producto">
+                <div class="product-image">
+                    <img src="img/WhatsApp Image 2025-11-20 at 7.56.29 AM (2).jpeg" alt="Pomadas">
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Pomada</div>
+                    <h3 class="product-name">POMADE BLACK - POWER - FORCE</h3>
+                    <p class="product-description">Pomadas black, power, force rolda.</p>
+                    <p class="product-description">150g</p>
+                    <div class="product-footer">
+                        <span class="product-price">$</span>
+                        <button class="add-to-cart">Añadir</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Producto 7 -->
+            <div class="product-card" data-item-type="producto">
+                <div class="product-image">
+                    <img src="img/WhatsApp Image 2025-11-20 at 7.56.29 AM (3).jpeg" alt="Crema de peinar">
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Crema</div>
+                    <h3 class="product-name">WHITE MOLDING CREAM</h3>
+                    <p class="product-description">Crema moldeadora.</p>
+                    <p class="product-description">150g</p>
+                    <div class="product-footer">
+                        <span class="product-price">$</span>
+                        <button class="add-to-cart">Añadir</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 8 -->
+            <div class="product-card" data-item-type="producto">
+                <div class="product-image">
+                    <img src="img/WhatsApp Image 2025-11-20 at 7.56.29 AM (1).jpeg" alt="Cera para peinar">
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Cera</div>
+                    <h3 class="product-name">HAIR CLAY</h3>
+                    <p class="product-description">Cera look mate - efecto seco.</p>
+                    <p class="product-description">150g</p>
+                    <div class="product-footer">
+                        <span class="product-price">$</span>
+                        <button class="add-to-cart">Añadir</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 9 -->
+            <div class="product-card" data-item-type="producto">
+                <div class="product-image">
+                    <img src="img/WhatsApp Image 2025-11-20 at 7.56.30 AM (1).jpeg" alt="Aceites para barba">
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Aceites</div>
+                    <h3 class="product-name">ACEITES PARA BARBA</h3>
+                    <p class="product-description">Cuidado y nutrición para la barba.</p>
+                    <div class="product-footer">
+                        <span class="product-price">$</span>
+                        <button class="add-to-cart">Añadir</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 10 -->
+            <div class="product-card" data-item-type="producto">
+                <div class="product-image">
+                    <img src="img/WhatsApp Image 2025-11-20 at 7.56.42 AM (3).jpeg" alt="Mascarilla facial">
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Mascarilla</div>
+                    <h3 class="product-name">BLACK CHARCOAL</h3>
+                    <p class="product-description">Mascarilla para el cuidado facial.</p>
+                    <div class="product-footer">
+                        <span class="product-price">$</span>
+                        <button class="add-to-cart">Añadir</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 11 -->
+            <div class="product-card" data-item-type="producto">
+                <div class="product-image">
+                    <img src="img/WhatsApp Image 2025-11-20 at 7.56.30 AM (2).jpeg" alt="Gel fijador">
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Gel</div>
+                    <h3 class="product-name">STALING GEL - BLACK</h3>
+                    <p class="product-description">Gel fijador.</p>
+                    <p class="product-description">500g</p>
+                    <div class="product-footer">
+                        <span class="product-price">$</span>
+                        <button class="add-to-cart">Añadir</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 12 -->
+            <div class="product-card" data-item-type="producto">
+                <div class="product-image">
+                    <img src="img/WhatsApp Image 2025-11-20 at 7.56.31 AM (1).jpeg" alt="Aceite para cortadoras">
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Maquinas</div>
+                    <h3 class="product-name">ACEITE PARA CORTADORAS</h3>
+                    <p class="product-description">Aceite lubricante para cortadoras.</p>
+                    <p class="product-description">100ml</p>
+                    <div class="product-footer">
+                        <span class="product-price">$</span>
+                        <button class="add-to-cart">Añadir</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 13 -->
+            <div class="product-card" data-item-type="producto">
+                <div class="product-image">
+                    <img src="img/WhatsApp Image 2025-11-20 at 7.56.31 AM (3).jpeg" alt="cera en polvo">
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Cera</div>
+                    <h3 class="product-name">NISH MAN</h3>
+                    <p class="product-description">Cera en polvo.</p>
+                    <div class="product-footer">
+                        <span class="product-price">$</span>
+                        <button class="add-to-cart">Añadir</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 14 -->
+            <div class="product-card" data-item-type="producto">
+                <div class="product-image">
+                    <img src="img/WhatsApp Image 2025-11-20 at 7.56.32 AM (1).jpeg" alt="tinte para cabello">
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Cabello</div>
+                    <h3 class="product-name">COLOR-1</h3>
+                    <p class="product-description">Tinte en crema para cabello.</p>
+                    <p class="product-description">150g</p>
+                    <div class="product-footer">
+                        <span class="product-price">$</span>
+                        <button class="add-to-cart">Añadir</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 15 -->
+            <div class="product-card" data-item-type="producto">
+                <div class="product-image">
+                    <img src="img/WhatsApp Image 2025-11-20 at 7.56.43 AM (2).jpeg" alt="lociones">
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Lociones</div>
+                    <h3 class="product-name">ASTHER SHAVE</h3>
+                    <p class="product-description">lociones</p>
+                    <div class="product-footer">
+                        <span class="product-price">$</span>
+                        <button class="add-to-cart">Añadir</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 16 -->
+           <div class="product-card" data-item-type="producto">
+                <div class="product-image">
+                    <img src="img/WhatsApp Image 2025-11-20 at 7.56.33 AM (1).jpeg" alt="maquina">
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Maquinas</div>
+                    <h3 class="product-name">Legend Clipper</h3>
+                    <p class="product-description">Máquina de corte (Clipper) profesional.</p>
+                    <div class="product-footer">
+                        <span class="product-price">$</span>
+                        <button class="add-to-cart">Añadir</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 17 -->
+            <div class="product-card" data-item-type="producto">
+                <div class="product-image">
+                    <img src="img/WhatsApp Image 2025-11-20 at 7.56.34 AM (2).jpeg" alt="hair spray">
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Cabello</div>
+                    <h3 class="product-name">HAIR SPRAY</h3>
+                    <p class="product-description">Spray fijador para cabello.</p>
+                    <div class="product-footer">
+                        <span class="product-price">$</span>
+                        <button class="add-to-cart">Añadir</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Producto 18 -->
+            <div class="product-card" data-item-type="producto">
+                <div class="product-image">
+                    <img src="img/WhatsApp Image 2025-11-20 at 7.56.36 AM (1).jpeg" alt="MINOXIDIL">
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Cabello</div>
+                    <h3 class="product-name">MINOXIDIL</h3>
+                    <p class="product-description">Tratamiento para la caída del cabello.</p>
+                    <p class="product-description">60ml</p>
+                    <div class="product-footer">
+                        <span class="product-price">$</span>
+                        <button class="add-to-cart">Añadir</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 19 -->
+            <div class="product-card" data-item-type="producto">
+                <div class="product-image">
+                    <img src="img/WhatsApp Image 2025-11-20 at 7.56.36 AM.jpeg" alt="ANDIS Cool Care Plus 5 en 1">
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Maquinas</div>
+                    <h3 class="product-name">ANDIS Cool Care Plus 5 en 1</h3>
+                    <p class="product-description">Es un spray 5 en 1 para máquinas de cortar cabello.</p>
+                    <div class="product-footer">
+                        <span class="product-price">$</span>
+                        <button class="add-to-cart">Añadir</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 20 -->
+            <div class="product-card" data-item-type="producto">
+                <div class="product-image">
+                    <img src="img/WhatsApp Image 2025-11-20 at 7.56.39 AM (3).jpeg" alt="ceras nish man">
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Cera</div>
+                    <h3 class="product-name">CERAS NISH MAN</h3>
+                    <p class="product-description">Cera para peinar y dar estilo al cabello.</p>
+                    <div class="product-footer">
+                        <span class="product-price">$</span>
+                        <button class="add-to-cart">Añadir</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 21 -->
+            <div class="product-card" data-item-type="producto">
+                <div class="product-image">
+                    <img src="img/WhatsApp Image 2025-11-20 at 7.56.41 AM (1).jpeg" alt="Styling GEL">
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Gel</div>
+                    <h3 class="product-name">STYLING GEL - POWER</h3>
+                    <p class="product-description">Gel para peinar y dar estilo al cabello.</p>
+                    <p class="product-description">500g</p>
+                    <div class="product-footer">
+                        <span class="product-price">$</span>
+                        <button class="add-to-cart">Añadir</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 22 -->
+            <div class="product-card" data-item-type="producto">
+                <div class="product-image">
+                    <img src="img/WhatsApp Image 2025-11-20 at 7.56.47 AM.jpeg" alt="espuma para el cabello">
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Cabello</div>
+                    <h3 class="product-name">HAIR MOUSE</h3>
+                    <p class="product-description">Espuma para el cabello rizo y trenzas.</p>
+                    <div class="product-footer">
+                        <span class="product-price">$</span>
+                        <button class="add-to-cart">Añadir</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 23 -->
+            <div class="product-card" data-item-type="producto">
+                <div class="product-image">
+                    <img src="img/WhatsApp Image 2025-11-20 at 7.56.47 AM (1).jpeg" alt="laca liquida">
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Cabello</div>
+                    <h3 class="product-name">SCULPTING SPRAY</h3>
+                    <p class="product-description">laca liquica.</p>
+                    <div class="product-footer">
+                        <span class="product-price">$</span>
+                        <button class="add-to-cart">Añadir</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 24 -->
+            <div class="product-card" data-item-type="producto">
+                <div class="product-image">
+                    <img src="img/WhatsApp Image 2025-11-20 at 7.56.43 AM.jpeg" alt="maquina limpieza nasal">
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Maquinas</div>
+                    <h3 class="product-name">DALING</h3>
+                    <p class="product-description">Maquina para limpieza nasal.</p>
+                    <div class="product-footer">
+                        <span class="product-price">$</span>
+                        <button class="add-to-cart">Añadir</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        </main>
+    </div>
+
+    <!-- Botón flotante del carrito -->
+    <button class="cart-fab" id="cartButton" aria-label="Carrito">
+        <span class="cart-icon">🛒</span>
+        <span class="cart-count" id="cartCount">0</span>
+    </button>
+
+    <!-- Carrito Sidebar -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h2>Carrito de Compras</h2>
+            <button class="close-cart" id="closeCart">×</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <div class="empty-cart">
+                <p>🛒 Tu carrito está vacío</p>
+            </div>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span class="total-price" id="totalPrice">$0.00</span>
+            </div>
+            <button class="checkout-btn" id="checkoutBtn">
+                <span class="btn-icon" id="btnIcon">🛒</span>
+                <span id="btnText">Finalizar</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Overlay -->
+    <div class="cart-overlay" id="cartOverlay"></div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Barbería Premium. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="js/products.js"></script>
+</body>
+</html>
