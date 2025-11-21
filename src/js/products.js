@@ -651,7 +651,7 @@ function generateWhatsAppMessage() {
     }
     
     // Default business number
-    let whatsappNumber = '573011737645';
+    let whatsappNumber = '573217917351';
     let message = '';
     let total = 0;
     let totalIncludedInMessage = false;
