@@ -213,8 +213,8 @@ function updateCheckoutButton() {
                 const p = parseFloat(it.price) || 0;
                 return sum + p * (it.quantity || 1);
             }, 0);
-            if (btnTextEl) btnTextEl.textContent = `Pagar $${total.toFixed(0)}`;
-            if (btnIconEl) btnIconEl.textContent = '💸';
+            if (btnTextEl) btnTextEl.textContent = `Finalizar $${total.toFixed(0)}`;
+            if (btnIconEl) btnIconEl.textContent = '';
             checkoutBtnEl.style.opacity = '1';
         }
     } catch (err) {
@@ -350,12 +350,49 @@ const cartSidebar = document.getElementById('cartSidebar');
 const closeCart = document.getElementById('closeCart');
 const cartOverlay = document.getElementById('cartOverlay');
 
+// Scroll lock helper (store scroll position and fix body)
+let __bodyScrollTop = 0;
+function lockBodyScroll() {
+    try {
+        __bodyScrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
+        // Add class to html/body to enforce overflow:hidden via CSS as primary strategy
+        try { document.documentElement.classList.add('scroll-locked'); } catch (er) {}
+        try { document.body.classList.add('scroll-locked'); } catch (er) {}
+        // Also fix body position to preserve visual location (fallback)
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${__bodyScrollTop}px`;
+        document.body.style.left = '0';
+        document.body.style.right = '0';
+        document.body.classList.add('cart-open');
+    } catch (e) {
+        try { document.body.classList.add('cart-open'); } catch (er) {}
+    }
+}
+
+function unlockBodyScroll() {
+    try {
+        // remove fixed positioning fallback
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.left = '';
+        document.body.style.right = '';
+        // remove scroll-locked classes
+        try { document.documentElement.classList.remove('scroll-locked'); } catch (er) {}
+        try { document.body.classList.remove('scroll-locked'); } catch (er) {}
+        document.body.classList.remove('cart-open');
+        window.scrollTo(0, __bodyScrollTop || 0);
+    } catch (e) {
+        try { document.body.classList.remove('cart-open'); } catch (er) {}
+    }
+}
+
 if (cartButton && cartSidebar && cartOverlay) {
     cartButton.addEventListener('click', () => {
         console.log('Botón de carrito clickeado'); // Debug
-        cartSidebar.classList.add('active');
-        cartOverlay.classList.add('active');
-        document.body.style.overflow = 'hidden';
+            cartSidebar.classList.add('active');
+            cartOverlay.classList.add('active');
+            // robust scroll lock
+            lockBodyScroll();
     });
 } else {
     console.error('Elementos del carrito no encontrados:', {
@@ -369,7 +406,7 @@ if (closeCart) {
     closeCart.addEventListener('click', () => {
         cartSidebar.classList.remove('active');
         cartOverlay.classList.remove('active');
-        document.body.style.overflow = '';
+        unlockBodyScroll();
     });
 }
 
@@ -377,8 +414,15 @@ if (cartOverlay) {
     cartOverlay.addEventListener('click', () => {
         cartSidebar.classList.remove('active');
         cartOverlay.classList.remove('active');
-        document.body.style.overflow = '';
+        unlockBodyScroll();
     });
+
+    // Prevent touchmove propagation on the overlay when active to avoid page scroll
+    cartOverlay.addEventListener('touchmove', function (e) {
+        if (cartOverlay.classList.contains('active')) {
+            e.preventDefault();
+        }
+    }, { passive: false });
 }
 
 // Botón de Finalizar Compra - Enviar a WhatsApp
@@ -680,7 +724,7 @@ try {
             if (cartSidebarEl && cartOverlayEl) {
                 cartSidebarEl.classList.add('active');
                 cartOverlayEl.classList.add('active');
-                document.body.style.overflow = 'hidden';
+                try { lockBodyScroll(); } catch(e){}
             }
         }, 150);
     }
@@ -723,7 +767,7 @@ if (mobileFilterToggle) {
     mobileFilterToggle.addEventListener('click', () => {
         filtersSidebar.classList.add('active');
         document.body.classList.add('filters-open');
-        document.body.style.overflow = 'hidden';
+        lockBodyScroll();
     });
 }
 
@@ -731,7 +775,7 @@ if (closeFilters) {
     closeFilters.addEventListener('click', () => {
         filtersSidebar.classList.remove('active');
         document.body.classList.remove('filters-open');
-        document.body.style.overflow = '';
+        unlockBodyScroll();
     });
 }
 
@@ -740,7 +784,7 @@ document.body.addEventListener('click', (e) => {
     if (e.target === document.body && document.body.classList.contains('filters-open')) {
         filtersSidebar.classList.remove('active');
         document.body.classList.remove('filters-open');
-        document.body.style.overflow = '';
+        unlockBodyScroll();
     }
 });
 
@@ -748,7 +792,7 @@ document.addEventListener('click', (e) => {
     if (e.target.tagName === 'BODY' && e.target.classList.contains('filters-open')) {
         filtersSidebar.classList.remove('active');
         document.body.classList.remove('filters-open');
-        document.body.style.overflow = '';
+        unlockBodyScroll();
     }
 });
 
