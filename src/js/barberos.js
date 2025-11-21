@@ -10,7 +10,8 @@ const AppState = {
             specialty: 'Especialista en Cortes Clásicos',
             experience: '8 años de experiencia',
             rating: 4.9,
-            servicesCount: 0
+            servicesCount: 0,
+            phone: ''
         },
         {
             id: 2,
@@ -18,7 +19,8 @@ const AppState = {
             specialty: 'Especialista en Estilos Modernos',
             experience: '6 años de experiencia',
             rating: 4.8,
-            servicesCount: 0
+            servicesCount: 0,
+            phone: ''
         },
         {
             id: 3,
@@ -26,7 +28,8 @@ const AppState = {
             specialty: 'Especialista en Barbas y Bigotes',
             experience: '10 años de experiencia',
             rating: 4.7,
-            servicesCount: 0
+            servicesCount: 0,
+            phone: ''
         },
         {
             id: 4,
@@ -34,7 +37,8 @@ const AppState = {
             specialty: 'Especialista en Cortes Premium',
             experience: '12 años de experiencia',
             rating: 4.9,
-            servicesCount: 0
+            servicesCount: 0,
+            phone: ''
         }
     ]
 };
@@ -88,6 +92,8 @@ function initializeElements() {
     elements.summaryPrice = document.getElementById('summaryPrice');
     elements.noServiceScreen = document.getElementById('noServiceScreen');
     elements.mainContainer = document.getElementById('mainContainer');
+
+    
 }
 
 // Validar que hay un servicio seleccionado
@@ -311,19 +317,102 @@ function handleNextButton() {
     // Guardar datos para la siguiente vista
     saveBookingData();
     
+    // Añadir la reserva al carrito (usar API CartApp si existe)
+    try {
+        addReservationToCart();
+    } catch (err) {
+        console.warn('No se pudo agregar la reserva al carrito desde barberos:', err);
+    }
+    
     // Simular navegación (aquí irías a la siguiente página)
     setTimeout(() => {
         // Aquí harías la navegación real, por ejemplo:
         // window.location.href = 'reserva.html';
-        console.log('Navegando a la siguiente vista con:', {
+        console.log('Finalizando reserva y redirigiendo al carrito con:', {
             service: AppState.selectedService,
             barber: AppState.selectedBarber,
             price: AppState.servicePrice
         });
-        
-        showNotification('Funcionalidad de navegación pendiente de implementar', 'info');
+
+        // Redirigir a la página de productos (que contiene el carrito) y abrir el sidebar
+        window.location.href = 'products.html?openCart=1';
         hideLoadingOverlay();
     }, 1500);
+}
+
+// Construir objeto de reserva y añadir al carrito (similar a servicios.js)
+function addReservationToCart() {
+    const serviceName = AppState.selectedService || localStorage.getItem('selectedService') || '';
+    const price = AppState.servicePrice || localStorage.getItem('servicePrice') || '0';
+    const barberName = AppState.selectedBarber ? AppState.selectedBarber.name : (JSON.parse(localStorage.getItem('selectedBarber') || 'null') || {}).name || '';
+
+    if (!serviceName) return;
+
+    const itemName = barberName ? `${serviceName} - ${barberName}` : serviceName;
+
+    let image = '';
+    let category = 'Servicio';
+    try {
+        // Intentar localizar la tarjeta del barbero seleccionado para obtener imagen
+        const cards = document.querySelectorAll('.barber-card');
+        for (const card of cards) {
+            if (card.dataset && parseInt(card.dataset.barberId) === (AppState.selectedBarber ? AppState.selectedBarber.id : null)) {
+                const imgEl = card.querySelector('img');
+                if (imgEl) image = imgEl.src || '';
+                break;
+            }
+        }
+    } catch (err) {
+        // ignore
+    }
+
+    const item = {
+        name: itemName,
+        category: category,
+        price: price,
+        image: image,
+        quantity: 1,
+        itemType: 'reserva',
+        // Adjuntar teléfono del barbero si está disponible
+        barberPhone: (AppState.selectedBarber && AppState.selectedBarber.phone) || ((JSON.parse(localStorage.getItem('selectedBarber') || 'null') || {}).phone) || '',
+        // Adjuntar hora/fecha de la reserva si existe en bookingData
+        appointmentTime: (() => {
+            try {
+                const bd = JSON.parse(localStorage.getItem('bookingData') || 'null');
+                return bd && bd.timestamp ? bd.timestamp : new Date().toISOString();
+            } catch (e) {
+                return new Date().toISOString();
+            }
+        })()
+    };
+
+    if (window.CartApp && typeof window.CartApp.addItem === 'function') {
+        try {
+            window.CartApp.addItem(item);
+            console.log('addReservationToCart (barberos): agregado vía CartApp', item);
+            showNotification('Reserva añadida al carrito', 'info');
+            return;
+        } catch (err) {
+            console.warn('CartApp.addItem falló en barberos:', err);
+        }
+    }
+
+    // Fallback a localStorage
+    try {
+        const stored = localStorage.getItem('cart');
+        const localCart = stored ? JSON.parse(stored) : [];
+        const existingIndex = localCart.findIndex(ci => ci.name === item.name && ci.itemType === 'reserva');
+        if (existingIndex !== -1) {
+            localCart[existingIndex].quantity = (localCart[existingIndex].quantity || 0) + 1;
+        } else {
+            localCart.push(item);
+        }
+        localStorage.setItem('cart', JSON.stringify(localCart));
+        console.log('addReservationToCart (barberos): agregado vía localStorage', item);
+        showNotification('Reserva añadida al carrito', 'info');
+    } catch (err) {
+        console.warn('No se pudo guardar la reserva en localStorage desde barberos:', err);
+    }
 }
 
 // Manejar click del botón "Atrás"

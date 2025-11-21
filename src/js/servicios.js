@@ -28,6 +28,8 @@ function initializeElements() {
     elements.btnContinue = document.getElementById('btnContinue');
     elements.selectedName = document.getElementById('selectedName');
     elements.selectedPrice = document.getElementById('selectedPrice');
+
+    
 }
 
 // Configurar event listeners
@@ -214,14 +216,77 @@ function handleContinueButton() {
         showNotification('Por favor selecciona un servicio', 'warning');
         return;
     }
-    
     const params = new URLSearchParams({
         service: encodeURIComponent(ServicesState.selectedService),
         price: encodeURIComponent(ServicesState.selectedPrice)
     });
-    
+
     window.location.href = `barberos.html?${params.toString()}`;
 }
+
+// Construir objeto de reserva y añadir al carrito
+function addReservationToCart() {
+    const name = ServicesState.selectedService;
+    const price = ServicesState.selectedPrice || '0';
+
+    // Intentar obtener imagen y categoría desde la tarjeta seleccionada usando búsqueda robusta
+    let image = '';
+    let category = 'Servicio';
+    try {
+        const allCards = document.querySelectorAll('.service-card');
+        for (const card of allCards) {
+            // dataset.service puede contener espacios, comparar directamente
+            if (card.dataset && card.dataset.service === name) {
+                const imgEl = card.querySelector('img');
+                if (imgEl) image = imgEl.src || '';
+                const catEl = card.querySelector('.service-category');
+                if (catEl) category = catEl.textContent || category;
+                break;
+            }
+        }
+    } catch (err) {
+        console.warn('Error buscando imagen/categoría de la tarjeta de servicio:', err);
+    }
+
+    const item = {
+        name: name,
+        category: category,
+        price: price,
+        image: image,
+        quantity: 1,
+        itemType: 'reserva'
+    };
+
+    // Si la API global de carrito existe, usarla
+    if (window.CartApp && typeof window.CartApp.addItem === 'function') {
+        try {
+            window.CartApp.addItem(item);
+            console.log('addReservationToCart: agregado vía CartApp', item);
+            showNotification('Reserva añadida al carrito', 'info');
+            return;
+        } catch (err) {
+            console.warn('CartApp.addItem falló:', err);
+        }
+    }
+
+    // Fallback: persistir en localStorage siguiendo misma estructura
+    try {
+        const stored = localStorage.getItem('cart');
+        const localCart = stored ? JSON.parse(stored) : [];
+        const existingIndex = localCart.findIndex(ci => ci.name === item.name && ci.itemType === 'reserva');
+        if (existingIndex !== -1) {
+            localCart[existingIndex].quantity = (localCart[existingIndex].quantity || 0) + 1;
+        } else {
+            localCart.push(item);
+        }
+        localStorage.setItem('cart', JSON.stringify(localCart));
+        console.log('addReservationToCart: agregado vía localStorage', item);
+        showNotification('Reserva añadida al carrito', 'info');
+    } catch (err) {
+        console.warn('No se pudo guardar la reserva en localStorage:', err);
+    }
+    }
+
 
 // Añadir feedback visual a la selección
 function addSelectionFeedback(card) {

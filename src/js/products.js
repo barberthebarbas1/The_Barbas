@@ -1,6 +1,8 @@
 // Esperar a que el DOM esté completamente cargado
 document.addEventListener('DOMContentLoaded', function() {
 
+    
+
 // Filtros de productos
 const filterButtons = document.querySelectorAll('.filter-btn');
 const productCards = document.querySelectorAll('.product-card');
@@ -83,6 +85,14 @@ searchInput.addEventListener('input', (e) => {
 
 // Carrito de compras
 let cart = [];
+// Cargar carrito desde localStorage si existe
+try {
+    const storedCart = localStorage.getItem('cart');
+    cart = storedCart ? JSON.parse(storedCart) : [];
+} catch (err) {
+    console.warn('No se pudo cargar el carrito desde localStorage:', err);
+    cart = [];
+}
 
 function updateCartUI() {
     const cartCount = document.getElementById('cartCount');
@@ -90,6 +100,18 @@ function updateCartUI() {
     const totalPrice = document.getElementById('totalPrice');
     
     cartCount.textContent = cart.length;
+    // Añadir clase de pulso al botón del carrito cuando tenga items
+    try {
+        const cartBtnEl = document.getElementById('cartButton');
+        // debug
+        console.debug('updateCartUI -> cart.length=', cart.length, 'cartButtonFound=', !!cartBtnEl);
+        if (cartBtnEl) {
+            if (cart.length > 0) cartBtnEl.classList.add('cart-has-items');
+            else cartBtnEl.classList.remove('cart-has-items');
+        }
+    } catch (err) {
+        console.warn('updateCartUI: error toggling cart-has-items', err);
+    }
     
     if (cart.length === 0) {
         cartItems.innerHTML = '<div class="empty-cart"><p>🛒 Tu carrito está vacío</p></div>';
@@ -151,14 +173,115 @@ function updateCartUI() {
             });
         });
     }
+    // Persistir carrito en localStorage
+    try {
+        localStorage.setItem('cart', JSON.stringify(cart));
+    } catch (err) {
+        console.warn('No se pudo guardar el carrito en localStorage:', err);
+    }
     
     // Actualizar botón dinámico según contenido del carrito
-    updateCheckoutButton();
+    // ensure checkout button UI is consistent
+    try {
+        if (typeof updateCheckoutButton === 'function') {
+            updateCheckoutButton();
+        } else {
+            console.warn('updateCheckoutButton not defined when calling from updateCartUI');
+        }
+    } catch (err) {
+        console.warn('Error calling updateCheckoutButton:', err);
+    }
 }
 
-// Añadir al carrito
-const addToCartButtons = document.querySelectorAll('.add-to-cart');
+// Actualiza el estado y el texto del botón de checkout según el carrito
+function updateCheckoutButton() {
+    try {
+        const checkoutBtnEl = document.getElementById('checkoutBtn');
+        const btnTextEl = document.getElementById('btnText');
+        const btnIconEl = document.getElementById('btnIcon');
 
+        if (!checkoutBtnEl) return;
+
+        if (!cart || cart.length === 0) {
+            checkoutBtnEl.disabled = true;
+            if (btnTextEl) btnTextEl.textContent = 'Finalizar';
+            if (btnIconEl) btnIconEl.textContent = '🛒';
+            checkoutBtnEl.style.opacity = '0.9';
+        } else {
+            checkoutBtnEl.disabled = false;
+            const total = cart.reduce((sum, it) => {
+                const p = parseFloat(it.price) || 0;
+                return sum + p * (it.quantity || 1);
+            }, 0);
+            if (btnTextEl) btnTextEl.textContent = `Pagar $${total.toFixed(0)}`;
+            if (btnIconEl) btnIconEl.textContent = '💸';
+            checkoutBtnEl.style.opacity = '1';
+        }
+    } catch (err) {
+        console.warn('updateCheckoutButton error', err);
+    }
+}
+
+// Añadir al carrito - utilidad reutilizable
+function addItemToCart(item, feedbackButton) {
+    if (!item || !item.name) return;
+
+    const existingItemIndex = cart.findIndex(ci => ci.name === item.name);
+    if (existingItemIndex !== -1) {
+        cart[existingItemIndex].quantity = (cart[existingItemIndex].quantity || 0) + (item.quantity || 1);
+    } else {
+        cart.push({
+            name: item.name,
+            category: item.category || '',
+            price: item.price || '0',
+            image: item.image || '',
+            quantity: item.quantity || 1,
+            itemType: item.itemType || 'producto'
+        });
+    }
+
+    updateCartUI();
+
+    // Feedback visual si se pasó el botón
+    if (feedbackButton) {
+        const originalText = feedbackButton.textContent;
+        const originalBg = feedbackButton.style.background;
+        feedbackButton.textContent = '✓ Añadido';
+        feedbackButton.style.background = '#4CAF50';
+        setTimeout(() => {
+            feedbackButton.textContent = originalText || 'Añadir';
+            feedbackButton.style.background = originalBg || '#ffffff';
+        }, 2000);
+    }
+
+    // Mostrar notificación flotante breve indicando que se añadió al carrito
+    try {
+        console.debug('addItemToCart -> mostrar notificacion para:', item.name);
+        showFloatingNotification(`${item.name} añadido al carrito`);
+        // Si por alguna razón el toast no aparece (conflictos de CSS/DOM), mostrar un fallback
+        setTimeout(() => {
+            if (!document.querySelector('.floating-notification')) {
+                // Fallback visual en esquina superior derecha
+                const fb = document.createElement('div');
+                fb.className = 'products-fallback-notif';
+                fb.textContent = `${item.name} añadido al carrito`;
+                Object.assign(fb.style, {
+                    position: 'fixed', top: '18px', right: '18px', zIndex: 99999,
+                    background: '#111', color: '#fff', padding: '10px 14px', borderRadius: '8px', boxShadow: '0 6px 18px rgba(0,0,0,0.3)', fontWeight: '700'
+                });
+                document.body.appendChild(fb);
+                setTimeout(() => {
+                    if (fb && fb.parentNode) fb.parentNode.removeChild(fb);
+                }, 1800);
+            }
+        }, 80);
+    } catch (e) {
+        // ignore if function not available
+    }
+}
+
+// Botón - usar la utilidad anterior
+const addToCartButtons = document.querySelectorAll('.add-to-cart');
 addToCartButtons.forEach(button => {
     button.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -166,38 +289,60 @@ addToCartButtons.forEach(button => {
         const productName = card.querySelector('.product-name').textContent;
         const productCategory = card.querySelector('.product-category').textContent;
         const productPrice = card.querySelector('.product-price').textContent.replace('$', '').trim();
-        const productImage = card.querySelector('.product-image img').src;
+        const productImageEl = card.querySelector('.product-image img');
+        const productImage = productImageEl ? productImageEl.src : '';
         const itemType = card.getAttribute('data-item-type') || 'producto'; // 'producto' o 'reserva'
-        
-        // Verificar si el producto ya existe en el carrito
-        const existingItemIndex = cart.findIndex(item => item.name === productName);
-        
-        if (existingItemIndex !== -1) {
-            // Si ya existe, aumentar cantidad
-            cart[existingItemIndex].quantity++;
-        } else {
-            // Si no existe, agregar nuevo con cantidad 1
-            cart.push({
-                name: productName,
-                category: productCategory,
-                price: productPrice || '0',
-                image: productImage,
-                quantity: 1,
-                itemType: itemType
-            });
-        }
-        
-        updateCartUI();
-        
-        button.textContent = '✓ Añadido';
-        button.style.background = '#4CAF50';
-        
-        setTimeout(() => {
-            button.textContent = 'Añadir';
-            button.style.background = '#ffffff';
-        }, 2000);
+
+        addItemToCart({
+            name: productName,
+            category: productCategory,
+            price: productPrice || '0',
+            image: productImage,
+            quantity: 1,
+            itemType: itemType
+        }, button);
     });
 });
+
+// Floating notification helper (simple toast)
+function showFloatingNotification(text, duration = 2000) {
+    try {
+        const existing = document.querySelector('.floating-notification');
+        if (existing) {
+            existing.parentNode.removeChild(existing);
+        }
+        const el = document.createElement('div');
+        // start hidden to allow transition
+        el.className = 'floating-notification hide';
+        el.textContent = text;
+        document.body.appendChild(el);
+        console.debug('showFloatingNotification -> appended element, triggering show');
+        // Allow the browser to paint, then show (ensures transition runs)
+        setTimeout(() => {
+            el.classList.remove('hide');
+            el.classList.add('show');
+        }, 20);
+        // hide after duration
+        setTimeout(() => {
+            el.classList.remove('show');
+            el.classList.add('hide');
+            setTimeout(() => {
+                if (el && el.parentNode) el.parentNode.removeChild(el);
+            }, 260);
+        }, duration);
+    } catch (err) {
+        console.warn('showFloatingNotification error', err);
+    }
+}
+
+// Exponer API pública para que otras páginas (ej. servicios.js) puedan agregar items
+window.CartApp = window.CartApp || {};
+window.CartApp.addItem = function(item) {
+    addItemToCart(item);
+};
+window.CartApp.getCart = function() {
+    return cart;
+};
 
 // Abrir/Cerrar carrito
 const cartButton = document.getElementById('cartButton');
@@ -244,9 +389,11 @@ function generateWhatsAppMessage() {
         return null;
     }
     
-    const whatsappNumber = '573011737645';
+    // Default business number
+    let whatsappNumber = '573011737645';
     let message = '';
     let total = 0;
+    let totalIncludedInMessage = false;
     
     // Detectar tipos en el carrito
     const hasProducto = cart.some(item => item.itemType === 'producto');
@@ -255,11 +402,11 @@ function generateWhatsAppMessage() {
     // Encabezado según el tipo
     if (hasProducto && hasReserva) {
         // Carrito mixto - separar en dos secciones
-        message = '🛒 *NUEVA ORDEN*%0A';
+        message = ' *NUEVA ORDEN*%0A';
         message += '━━━━━━━━━━━━━━━━━━%0A%0A';
         
         // Sección de productos
-        message += '📦 *PRODUCTOS PARA ENVÍO*%0A%0A';
+        message += ' *PRODUCTOS*%0A%0A';
         let contadorProductos = 1;
         cart.filter(item => item.itemType === 'producto').forEach((item) => {
             const price = parseFloat(item.price) || 0;
@@ -267,22 +414,32 @@ function generateWhatsAppMessage() {
             total += itemTotal;
             message += `${contadorProductos}. ${item.name}%0A`;
             message += `   • Cant: ${item.quantity}%0A`;
-            message += `   • Precio: $${price.toFixed(0)}%0A`;
-            message += `   • Subtotal: $${itemTotal.toFixed(0)}%0A%0A`;
+            message += `   • Precio: $${price.toFixed(0)}%0A%0A`;
             contadorProductos++;
         });
         
         message += '━━━━━━━━━━━━━━━━━━%0A';
-        message += '📅 *SERVICIOS/RESERVAS*%0A%0A';
+        message += ' *SERVICIOS/RESERVAS*%0A%0A';
         let contadorReservas = 1;
-        cart.filter(item => item.itemType === 'reserva').forEach((item) => {
+        const reservas = cart.filter(item => item.itemType === 'reserva');
+        // Si todas las reservas tienen el mismo barberPhone válido, usar ese número
+        const phones = reservas.map(r => r.barberPhone).filter(p => p && p.trim() !== '');
+        if (phones.length > 0 && phones.every(p => p === phones[0])) {
+            whatsappNumber = phones[0];
+        }
+
+        reservas.forEach((item) => {
             const price = parseFloat(item.price) || 0;
             const itemTotal = price * item.quantity;
             total += itemTotal;
             message += `${contadorReservas}. ${item.name}%0A`;
+            if (item.barberPhone) {
+                message += `   • Barbero: ${item.name.split(' - ').slice(1).join(' - ') || ''}%0A`;
+                message += `   • Tel Barbero: ${item.barberPhone}%0A`;
+            }
+            // omitimos fecha/hora según petición del usuario
             message += `   • Cant: ${item.quantity}%0A`;
-            message += `   • Precio: $${price.toFixed(0)}%0A`;
-            message += `   • Subtotal: $${itemTotal.toFixed(0)}%0A%0A`;
+            message += `   • Precio: $${price.toFixed(0)}%0A%0A`;
             contadorReservas++;
         });
         
@@ -298,43 +455,237 @@ function generateWhatsAppMessage() {
             message += `${index + 1}. ${item.name}%0A`;
             message += `   • Categoría: ${item.category}%0A`;
             message += `   • Cantidad: ${item.quantity}%0A`;
-            message += `   • Precio: $${price.toFixed(0)}%0A`;
-            message += `   • Subtotal: $${itemTotal.toFixed(0)}%0A%0A`;
+            message += `   • Precio: $${price.toFixed(0)}%0A%0A`;
         });
         
     } else if (hasReserva) {
-        // Solo reservas
-        message = '📅 *NUEVA RESERVA*%0A';
-        message += '━━━━━━━━━━━━━━━━━━%0A%0A';
-        
-        cart.forEach((item, index) => {
-            const price = parseFloat(item.price) || 0;
-            const itemTotal = price * item.quantity;
-            total += itemTotal;
-            message += `${index + 1}. ${item.name}%0A`;
-            message += `   • Categoría: ${item.category}%0A`;
-            message += `   • Cantidad: ${item.quantity}%0A`;
-            message += `   • Precio: $${price.toFixed(0)}%0A`;
-            message += `   • Subtotal: $${itemTotal.toFixed(0)}%0A%0A`;
-        });
+        // Solo reservas — antes de armar, verificar si vamos a enviar al teléfono del barbero
+        const reservasSolo = cart.filter(item => item.itemType === 'reserva');
+
+        // Si todas las reservas comparten un barberPhone válido, construiremos un mensaje limpio PARA EL BARBERO
+        const barberPhones = reservasSolo.map(r => r.barberPhone).filter(p => p && p.trim() !== '');
+        const singleBarberPhone = barberPhones.length > 0 && barberPhones.every(p => p === barberPhones[0]) ? barberPhones[0] : null;
+
+        if (singleBarberPhone) {
+            // Mensaje compacto y relevante para el barbero
+            // Incluir: reserva(s) (nombre y tipo), barbero, productos seleccionados (si hay) y total
+            message = '📅 *NUEVA RESERVA*%0A';
+            message += '━━━━━━━━━━━━━━━━━━%0A%0A';
+
+            // Reservas
+            message += '*Reserva(s):*%0A';
+            reservasSolo.forEach((item, i) => {
+                // item.name puede contener 'Servicio - Barber'
+                const serviceName = item.name.split(' - ')[0] || item.name;
+                message += `${i + 1}. ${serviceName}%0A`;
+                if (item.category) {
+                    message += `   • Tipo: ${item.category}%0A`;
+                }
+                // Si el nombre contiene el barbero, extraerlo
+                const barberPart = (item.name.split(' - ').slice(1).join(' - ')).trim();
+                if (barberPart) {
+                    message += `   • Barbero: ${barberPart}%0A`;
+                }
+                message += `%0A`;
+            });
+
+            // Productos, si hay
+            const productos = cart.filter(i => i.itemType === 'producto');
+            if (productos.length > 0) {
+                message += '━━━━━━━━━━━━━━━━━━%0A';
+                message += '*Productos seleccionados:*%0A';
+                productos.forEach((p, pi) => {
+                    message += `${pi + 1}. ${p.name} (x${p.quantity || 1})%0A`;
+                });
+                message += `%0A`;
+            }
+
+            // Total
+            let totalForMessage = 0;
+            cart.forEach(ci => {
+                const p = parseFloat(ci.price) || 0;
+                totalForMessage += p * (ci.quantity || 1);
+            });
+            message += '━━━━━━━━━━━━━━━━━━%0A';
+            message += `*TOTAL: $${totalForMessage.toFixed(0)}*%0A%0A`;
+
+            message += 'Por favor confirma disponibilidad. Gracias.%0A';
+
+            totalIncludedInMessage = true;
+
+            // Usar el teléfono del barbero como destino
+            whatsappNumber = singleBarberPhone;
+        } else {
+            // Si no hay barberPhone único, construir el mensaje general de reservas (igual que antes)
+            message = '📅 *NUEVA RESERVA*%0A';
+            message += '━━━━━━━━━━━━━━━━━━%0A%0A';
+            cart.forEach((item, index) => {
+                const price = parseFloat(item.price) || 0;
+                const itemTotal = price * item.quantity;
+                total += itemTotal;
+                message += `${index + 1}. ${item.name}%0A`;
+                message += `   • Categoría: ${item.category}%0A`;
+                message += `   • Cantidad: ${item.quantity}%0A`;
+                message += `   • Precio: $${price.toFixed(0)}%0A%0A`;
+            });
+        }
     }
     
-    message += '━━━━━━━━━━━━━━━━━━%0A';
-    message += `💰 *TOTAL: $${total.toFixed(0)}*%0A%0A`;
-    message += '¡Gracias por tu preferencia! 🙌';
-    
+            // Añadir total aquí solo si no se incluyó antes
+            if (!totalIncludedInMessage) {
+                message += '━━━━━━━━━━━━━━━━━━%0A';
+                message += `💰 *TOTAL: $${total.toFixed(0)}*%0A%0A`;
+            }
+    // Si hay bookingData con nombre de cliente, anteponerlo al mensaje
+    try {
+        const bd = JSON.parse(localStorage.getItem('bookingData') || 'null');
+        if (bd && bd.clientName) {
+            const clientLine = `*CLIENTE:* ${bd.clientName}%0A━━━━━━━━━━━━━━━━━━%0A%0A`;
+            message = clientLine + message;
+        }
+    } catch (err) {
+        // ignore
+    }
+
     return { whatsappNumber, message };
 }
 
-// Botón Finalizar - Envía automáticamente según tipo detectado
+// Botón Finalizar - Abrir modal para pedir nombre del cliente antes de enviar
 const checkoutBtn = document.getElementById('checkoutBtn');
 if (checkoutBtn) {
     checkoutBtn.addEventListener('click', () => {
-        const data = generateWhatsAppMessage();
-        if (data) {
-            window.open(`https://wa.me/${data.whatsappNumber}?text=${data.message}`, '_blank');
-        }
+        showClientNameModal((clientName) => {
+            try {
+                // Guardar bookingData parcial con clientName para que el mensaje la incluya
+                let bd = null;
+                try { bd = JSON.parse(localStorage.getItem('bookingData') || 'null'); } catch(e){ bd = null; }
+                bd = bd && typeof bd === 'object' ? bd : {};
+                bd.clientName = clientName || '';
+                localStorage.setItem('bookingData', JSON.stringify(bd));
+            } catch (err) {
+                console.warn('No se pudo guardar bookingData:', err);
+            }
+
+            const data = generateWhatsAppMessage();
+            if (data) {
+                // Abrir WhatsApp en nueva pestaña usando número normalizado
+                try {
+                    window.open(`https://wa.me/${normalizePhone(data.whatsappNumber)}?text=${data.message}`, '_blank');
+                } catch (err) {
+                    console.warn('No se pudo abrir WhatsApp:', err);
+                }
+
+                // Vaciar carrito localmente para permitir nuevas compras
+                try {
+                    cart = [];
+                    localStorage.removeItem('cart');
+                    updateCartUI();
+                    // Intentar mostrar notificación si existe la función
+                    if (typeof showNotification === 'function') {
+                        showNotification('Orden enviada y carrito vaciado', 'info');
+                    } else {
+                        console.info('Orden enviada y carrito vaciado');
+                    }
+                } catch (err) {
+                    console.warn('Error vaciando el carrito tras checkout:', err);
+                }
+            }
+        });
     });
+}
+
+// --- Modal dinámico para pedir el nombre del cliente ---
+function showClientNameModal(onConfirm) {
+    // Evitar crear más de un modal
+    if (document.getElementById('clientNameModal')) return;
+
+    const modal = document.createElement('div');
+    modal.id = 'clientNameModal';
+    Object.assign(modal.style, {
+        position: 'fixed', inset: '0', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: 'rgba(0,0,0,0.6)', zIndex: '2000'
+    });
+
+    const box = document.createElement('div');
+    Object.assign(box.style, {
+        background: '#111', padding: '20px', borderRadius: '10px', width: '90%', maxWidth: '420px', boxShadow: '0 8px 30px rgba(0,0,0,0.7)'
+    });
+
+    const title = document.createElement('h3');
+    title.textContent = 'Nombre del cliente';
+    title.style.marginBottom = '10px';
+    title.style.color = '#fff';
+
+    const desc = document.createElement('p');
+    desc.textContent = 'Por favor ingresa tu nombre para agendar la reserva.';
+    desc.style.color = '#ccc';
+    desc.style.fontSize = '0.95rem';
+    desc.style.marginBottom = '12px';
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.id = 'clientNameInput';
+    input.placeholder = 'Nombre del cliente';
+    Object.assign(input.style, { width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #333', background: '#222', color: '#fff', marginBottom: '12px' });
+
+    const actions = document.createElement('div');
+    Object.assign(actions.style, { display: 'flex', justifyContent: 'flex-end', gap: '8px' });
+
+    const btnCancel = document.createElement('button');
+    btnCancel.textContent = 'Cancelar';
+    Object.assign(btnCancel.style, { padding: '8px 12px', borderRadius: '8px', border: '1px solid #444', background: '#222', color: '#fff' });
+    btnCancel.onclick = () => { document.body.removeChild(modal); };
+
+    const btnOk = document.createElement('button');
+    btnOk.textContent = 'Confirmar';
+    Object.assign(btnOk.style, { padding: '8px 12px', borderRadius: '8px', border: 'none', background: '#28a745', color: '#fff' });
+    btnOk.onclick = () => {
+        const val = input.value.trim();
+        if (!val) {
+            input.focus();
+            return;
+        }
+        document.body.removeChild(modal);
+        if (typeof onConfirm === 'function') onConfirm(val);
+    };
+
+    actions.appendChild(btnCancel);
+    actions.appendChild(btnOk);
+
+    box.appendChild(title);
+    box.appendChild(desc);
+    box.appendChild(input);
+    box.appendChild(actions);
+    modal.appendChild(box);
+    document.body.appendChild(modal);
+
+    setTimeout(() => { input.focus(); }, 50);
+}
+
+// Helper: normalizar teléfonos para wa.me (quitar caracteres no numéricos)
+function normalizePhone(phone) {
+    if (!phone) return '';
+    return String(phone).replace(/[^0-9]/g, '');
+}
+
+// Al cargar la página, actualizar la UI del carrito desde localStorage
+try {
+    updateCartUI();
+    // Si la URL solicita abrir el carrito, hacerlo
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('openCart') === '1') {
+        setTimeout(() => {
+            const cartSidebarEl = document.getElementById('cartSidebar');
+            const cartOverlayEl = document.getElementById('cartOverlay');
+            if (cartSidebarEl && cartOverlayEl) {
+                cartSidebarEl.classList.add('active');
+                cartOverlayEl.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }, 150);
+    }
+} catch (err) {
+    console.warn('Error inicializando UI del carrito:', err);
 }
 
 // Menú hamburguesa
@@ -401,4 +752,4 @@ document.addEventListener('click', (e) => {
     }
 });
 
-}); // Fin del DOMContentLoaded
+}); 

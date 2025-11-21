@@ -389,6 +389,27 @@ nav {
     pointer-events: all;
 }
 
+/* Pulse animation for cart FAB when it has items */
+.cart-fab.cart-has-items{
+    animation: cart-pulse 1.6s cubic-bezier(.2,.9,.3,1) infinite;
+    transform-origin: center center;
+}
+@keyframes cart-pulse{
+    0%{ transform: scale(1); }
+    50%{ transform: scale(1.06); }
+    100%{ transform: scale(1); }
+}
+.cart-fab.cart-has-items:hover{
+    animation-play-state: paused;
+    transform: scale(1.06);
+}
+
+/* Floating notification (toast) - dark themed for products page */
+.floating-notification{
+    position:fixed;left:50%;transform:translateX(-50%);bottom:24px;background:linear-gradient(180deg,#222,#1b1b1b);color:#fff;padding:10px 14px;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.6);z-index:3500;font-weight:700;font-size:13px;opacity:0;pointer-events:none;transition:transform .22s ease,opacity .22s ease}
+.floating-notification.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.floating-notification.hide{opacity:0;transform:translateX(-50%) translateY(8px)}
+
 /* Hero Section */
 .hero {
     background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 

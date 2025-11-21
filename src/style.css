@@ -168,6 +168,26 @@ nav{max-width:1100px;margin:0 auto;padding:0 16px;display:flex;align-items:cente
 .socials{margin-top:12px;display:flex;gap:12px}
 .social-link{color:#e6eef6;text-decoration:none;padding:6px 10px;border-radius:6px;background:transparent;border:1px solid transparent;font-weight:700}
 .social-link:hover{background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.04)}
+/* Cart button pulsing animation when the cart has items */
+#cartButton.cart-has-items{
+	animation: cart-pulse 1.6s cubic-bezier(.2,.9,.3,1) infinite;
+	transform-origin:center center;
+}
+@keyframes cart-pulse{
+	0%{ transform: scale(1); }
+	50%{ transform: scale(1.06); }
+	100%{ transform: scale(1); }
+}
+#cartButton.cart-has-items:hover{
+	animation-play-state: paused;
+	transform: scale(1.06);
+}
+
+/* Floating notification (toast) */
+.floating-notification{
+	position:fixed;left:50%;transform:translateX(-50%);bottom:24px;background:linear-gradient(180deg,#ffffff,#f7f7f7);color:#111;padding:10px 14px;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.25);z-index:3500;font-weight:700;font-size:13px;opacity:0;pointer-events:none;transition:transform .22s ease,opacity .22s ease}
+.floating-notification.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.floating-notification.hide{opacity:0;transform:translateX(-50%) translateY(8px)}
 .footer-bottom{text-align:center;color:#98a2a8;margin-top:18px;font-size:13px}
 
 @media(max-width:800px){
