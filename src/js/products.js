@@ -15,7 +15,7 @@ function applyFilters() {
     productCards.forEach(card => {
         const category = card.querySelector('.product-category').textContent.toLowerCase();
         const priceText = card.querySelector('.product-price').textContent;
-        const price = parseFloat(priceText.replace('$', ''));
+        const price = parseFloat(normalizePrice(priceText));
         const productName = card.querySelector('.product-name').textContent.toLowerCase();
         const productCategory = card.querySelector('.product-category').textContent.toLowerCase();
         
@@ -94,6 +94,38 @@ try {
     cart = [];
 }
 
+// Helper global: formatear valores en COP (sin decimales)
+function formatCOP(value) {
+    try {
+        const n = Number(value) || 0;
+        return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(n);
+    } catch (e) {
+        return `$${(Number(value) || 0).toFixed(0)}`;
+    }
+}
+
+// Normalizar precio: quitar símbolos y separadores de miles, devolver string numérico
+function normalizePrice(input) {
+    if (input === null || input === undefined) return '0';
+    let s = String(input).trim();
+    s = s.replace(/[^0-9.,-]/g, '');
+    const hasComma = s.indexOf(',') !== -1;
+    const hasDot = s.indexOf('.') !== -1;
+    if (hasDot && !hasComma) {
+        const parts = s.split('.');
+        const lastLen = parts[parts.length - 1] ? parts[parts.length - 1].length : 0;
+        if (parts.length >= 2 && lastLen === 3) {
+            s = parts.join('');
+        }
+    }
+    if (hasComma) {
+        s = s.replace(/\./g, '');
+        s = s.replace(/,/g, '.');
+    }
+    if (s === '' || s === '.' || s === ',') return '0';
+    return s;
+}
+
 function updateCartUI() {
     const cartCount = document.getElementById('cartCount');
     const cartItems = document.getElementById('cartItems');
@@ -113,9 +145,11 @@ function updateCartUI() {
         console.warn('updateCartUI: error toggling cart-has-items', err);
     }
     
+    // use global formatCOP helper
+
     if (cart.length === 0) {
         cartItems.innerHTML = '<div class="empty-cart"><p>🛒 Tu carrito está vacío</p></div>';
-        totalPrice.textContent = '$0.00';
+        totalPrice.textContent = formatCOP(0);
     } else {
         let total = 0;
         cartItems.innerHTML = cart.map((item, index) => {
@@ -136,18 +170,20 @@ function updateCartUI() {
                             <button class="qty-btn plus" data-index="${index}">+</button>
                         </div>
                         <div class="cart-item-footer">
-                            <div class="cart-item-price">$${itemTotal.toFixed(2)}</div>
+                            <div class="cart-item-price">${formatCOP(itemTotal)}</div>
                             <button class="remove-item" data-index="${index}">Eliminar</button>
                         </div>
                     </div>
                 </div>
             `;
         }).join('');
-        totalPrice.textContent = `$${total.toFixed(2)}`;
+        totalPrice.textContent = formatCOP(total);
         
         // Agregar eventos a los botones de cantidad
         document.querySelectorAll('.qty-btn.plus').forEach(btn => {
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', (e) => {
+                // prevent bubbling to the document-level outside click handler
+                e.stopPropagation();
                 const index = parseInt(btn.dataset.index);
                 cart[index].quantity++;
                 updateCartUI();
@@ -155,7 +191,8 @@ function updateCartUI() {
         });
         
         document.querySelectorAll('.qty-btn.minus').forEach(btn => {
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
                 const index = parseInt(btn.dataset.index);
                 if (cart[index].quantity > 1) {
                     cart[index].quantity--;
@@ -166,7 +203,8 @@ function updateCartUI() {
         
         // Agregar eventos a los botones de eliminar
         document.querySelectorAll('.remove-item').forEach(btn => {
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
                 const index = parseInt(btn.dataset.index);
                 cart.splice(index, 1);
                 updateCartUI();
@@ -213,7 +251,7 @@ function updateCheckoutButton() {
                 const p = parseFloat(it.price) || 0;
                 return sum + p * (it.quantity || 1);
             }, 0);
-            if (btnTextEl) btnTextEl.textContent = `Finalizar $${total.toFixed(0)}`;
+            if (btnTextEl) btnTextEl.textContent = `Finalizar ${formatCOP(total)}`;
             if (btnIconEl) btnIconEl.textContent = '';
             checkoutBtnEl.style.opacity = '1';
         }
@@ -288,7 +326,8 @@ addToCartButtons.forEach(button => {
         const card = button.closest('.product-card');
         const productName = card.querySelector('.product-name').textContent;
         const productCategory = card.querySelector('.product-category').textContent;
-        const productPrice = card.querySelector('.product-price').textContent.replace('$', '').trim();
+        const rawPriceText = card.querySelector('.product-price').textContent || '';
+        const productPrice = normalizePrice(rawPriceText) || '0';
         const productImageEl = card.querySelector('.product-image img');
         const productImage = productImageEl ? productImageEl.src : '';
         const itemType = card.getAttribute('data-item-type') || 'producto'; // 'producto' o 'reserva'
@@ -358,11 +397,9 @@ function lockBodyScroll() {
         // Add class to html/body to enforce overflow:hidden via CSS as primary strategy
         try { document.documentElement.classList.add('scroll-locked'); } catch (er) {}
         try { document.body.classList.add('scroll-locked'); } catch (er) {}
-        // Also fix body position to preserve visual location (fallback)
-        document.body.style.position = 'fixed';
-        document.body.style.top = `-${__bodyScrollTop}px`;
-        document.body.style.left = '0';
-        document.body.style.right = '0';
+        // Note: avoid setting body.position = fixed on mobile because it can
+        // cause fixed-position elements (like the cart header) to shift.
+        // Use class-based overflow lock and preserve the scroll position for restore.
         document.body.classList.add('cart-open');
     } catch (e) {
         try { document.body.classList.add('cart-open'); } catch (er) {}
@@ -371,50 +408,184 @@ function lockBodyScroll() {
 
 function unlockBodyScroll() {
     try {
-        // remove fixed positioning fallback
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.left = '';
-        document.body.style.right = '';
-        // remove scroll-locked classes
+        // remove scroll-locked classes and restore previous scroll position
         try { document.documentElement.classList.remove('scroll-locked'); } catch (er) {}
         try { document.body.classList.remove('scroll-locked'); } catch (er) {}
         document.body.classList.remove('cart-open');
-        window.scrollTo(0, __bodyScrollTop || 0);
+        try { window.scrollTo(0, __bodyScrollTop || 0); } catch (er) {}
     } catch (e) {
         try { document.body.classList.remove('cart-open'); } catch (er) {}
     }
 }
 
-if (cartButton && cartSidebar && cartOverlay) {
-    cartButton.addEventListener('click', () => {
-        console.log('Botón de carrito clickeado'); // Debug
-            cartSidebar.classList.add('active');
-            cartOverlay.classList.add('active');
-            // robust scroll lock
-            lockBodyScroll();
-    });
-} else {
-    console.error('Elementos del carrito no encontrados:', {
-        cartButton: !!cartButton,
-        cartSidebar: !!cartSidebar,
-        cartOverlay: !!cartOverlay
-    });
+// Centralizar abrir/cerrar del sidebar para gestionar listeners globales
+let __cartOutsideHandler = null;
+let __cartOutsideTouchHandler = null;
+let __visualViewportResizeHandler = null;
+let __visualViewportScrollHandler = null;
+
+function openCartSidebar() {
+    if (!cartSidebar || !cartOverlay) return;
+    console.log('openCartSidebar');
+    cartSidebar.classList.add('active');
+    cartOverlay.classList.add('active');
+    lockBodyScroll();
+    try { adjustCartInnerHeight(); } catch (e) { /* ignore */ }
+    try { setTimeout(() => { adjustCartInnerHeight(); }, 90); } catch (e) {}
+
+    // Add document-level listeners to close the cart when tapping outside
+    __cartOutsideHandler = function(e) {
+        try {
+            // If a modal is open, ignore outside clicks so modal actions don't close the cart
+            const modalEl = document.getElementById('clientNameModal');
+            if (modalEl) {
+                // if click is inside the modal, ignore; if click is outside modal, still ignore to avoid closing cart while modal active
+                return;
+            }
+            if (!cartSidebar.contains(e.target) && !cartButton.contains(e.target)) {
+                closeCartSidebar();
+            }
+        } catch (err) { /* ignore */ }
+    };
+    __cartOutsideTouchHandler = function(e) {
+        try {
+            // Mirror click behavior for touchstart: ignore when client modal is open
+            const modalEl = document.getElementById('clientNameModal');
+            if (modalEl) {
+                return;
+            }
+            if (!cartSidebar.contains(e.target) && !cartButton.contains(e.target)) {
+                closeCartSidebar();
+            }
+        } catch (err) { /* ignore */ }
+    };
+    document.addEventListener('click', __cartOutsideHandler);
+    document.addEventListener('touchstart', __cartOutsideTouchHandler, { passive: true });
+    // after opening and sizing, ensure the items area is scrolled so footer is visible
+    try {
+        setTimeout(() => {
+            try {
+                const cartItemsEl = document.getElementById('cartItems');
+                if (cartItemsEl) {
+                    // scroll to bottom of items area so sticky footer is visible
+                    cartItemsEl.scrollTop = Math.max(0, cartItemsEl.scrollHeight - cartItemsEl.clientHeight);
+                }
+            } catch (e) { /* ignore */ }
+        }, 150);
+    } catch (e) {}
+
+    // Attach visualViewport handlers for mobile browsers (resize when chrome shows/hides)
+    if (window.visualViewport) {
+        __visualViewportResizeHandler = debounce(() => { adjustCartInnerHeight(); }, 80);
+        __visualViewportScrollHandler = debounce(() => { adjustCartInnerHeight(); }, 80);
+        try { window.visualViewport.addEventListener('resize', __visualViewportResizeHandler); } catch (e) {}
+        try { window.visualViewport.addEventListener('scroll', __visualViewportScrollHandler); } catch (e) {}
+    }
 }
 
+function closeCartSidebar() {
+    if (!cartSidebar || !cartOverlay) return;
+    console.log('closeCartSidebar');
+    cartSidebar.classList.remove('active');
+    cartOverlay.classList.remove('active');
+    unlockBodyScroll();
+    try { document.removeEventListener('click', __cartOutsideHandler); } catch (e) {}
+    try { document.removeEventListener('touchstart', __cartOutsideTouchHandler); } catch (e) {}
+    // remove visualViewport handlers if attached
+    if (window.visualViewport) {
+        try { window.visualViewport.removeEventListener('resize', __visualViewportResizeHandler); } catch (e) {}
+        try { window.visualViewport.removeEventListener('scroll', __visualViewportScrollHandler); } catch (e) {}
+        __visualViewportResizeHandler = null;
+        __visualViewportScrollHandler = null;
+    }
+    __cartOutsideHandler = null; __cartOutsideTouchHandler = null;
+}
+
+if (cartButton) {
+    cartButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openCartSidebar();
+    });
+} else {
+    console.error('cartButton not found');
+}
+
+// Ajusta la altura del área `.cart-items` según el viewport y header/footer del sidebar
+function adjustCartInnerHeight() {
+    try {
+        console.debug('adjustCartInnerHeight -> window', { innerWidth: window.innerWidth, innerHeight: window.innerHeight });
+        const cartSidebarEl = document.getElementById('cartSidebar');
+        const cartItemsEl = document.getElementById('cartItems');
+        const cartHeaderEl = cartSidebarEl ? cartSidebarEl.querySelector('.cart-header') : null;
+        const cartFooterEl = cartSidebarEl ? cartSidebarEl.querySelector('.cart-footer') : null;
+        if (!cartItemsEl) return;
+
+        // For mobile we prefer the sidebar itself to be scrollable and keep header/footer sticky
+        if (window.innerWidth <= 768 && cartSidebarEl) {
+            // Determine viewport height in a mobile-friendly way (use visualViewport when available)
+            const viewportH = (window.visualViewport && window.visualViewport.height) ? window.visualViewport.height : window.innerHeight;
+
+            // set the sidebar max-height to the visible viewport to avoid browser chrome cutting it
+            cartSidebarEl.style.maxHeight = viewportH + 'px';
+
+            // Measure header/footer heights inside the sidebar
+            const headerH = cartHeaderEl ? Math.ceil(cartHeaderEl.getBoundingClientRect().height) : 0;
+            const footerH = cartFooterEl ? Math.ceil(cartFooterEl.getBoundingClientRect().height) : 0;
+            console.debug('adjustCartInnerHeight -> viewport and header/footer', { viewportH, headerH, footerH });
+
+            // Set max-height for the scrollable items area so footer remains visible
+            const safeBuffer = 20; // extra space to account for browser UI variations
+            const itemsMax = Math.max(0, viewportH - headerH - footerH - safeBuffer);
+            cartItemsEl.style.maxHeight = itemsMax + 'px';
+            cartItemsEl.style.overflowY = 'auto';
+            cartItemsEl.style.webkitOverflowScrolling = 'touch';
+            // ensure min-height is unset so flex can shrink
+            cartItemsEl.style.minHeight = '0';
+        } else {
+            // desktop: remove any inline styles we may have applied
+            if (cartSidebarEl) cartSidebarEl.style.maxHeight = '';
+            cartItemsEl.style.height = '';
+            cartItemsEl.style.maxHeight = '';
+            cartItemsEl.style.overflowY = '';
+            cartItemsEl.style.webkitOverflowScrolling = '';
+        }
+    } catch (err) {
+        console.warn('adjustCartInnerHeight failed', err);
+    }
+}
+
+// Ajustar en redimension/rotación para móviles
+// Debounce helper (used for resize/orientation handlers)
+function debounce(fn, wait) {
+    let timer = null;
+    return function(...args) {
+        const ctx = this;
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(() => {
+            timer = null;
+            try { fn.apply(ctx, args); } catch (e) { console.error('debounce callback error', e); }
+        }, wait);
+    };
+}
+
+window.addEventListener('resize', debounce(() => {
+    adjustCartInnerHeight();
+}, 120));
+window.addEventListener('orientationchange', () => { setTimeout(adjustCartInnerHeight, 150); });
+
 if (closeCart) {
-    closeCart.addEventListener('click', () => {
-        cartSidebar.classList.remove('active');
-        cartOverlay.classList.remove('active');
-        unlockBodyScroll();
+    closeCart.addEventListener('click', (e) => {
+        e.stopPropagation();
+        console.log('closeCart clicked');
+        closeCartSidebar();
     });
 }
 
 if (cartOverlay) {
-    cartOverlay.addEventListener('click', () => {
-        cartSidebar.classList.remove('active');
-        cartOverlay.classList.remove('active');
-        unlockBodyScroll();
+    cartOverlay.addEventListener('click', (e) => {
+        e.stopPropagation();
+        console.log('cartOverlay clicked');
+        closeCartSidebar();
     });
 
     // Prevent touchmove propagation on the overlay when active to avoid page scroll
@@ -458,7 +629,7 @@ function generateWhatsAppMessage() {
             total += itemTotal;
             message += `${contadorProductos}. ${item.name}%0A`;
             message += `   • Cant: ${item.quantity}%0A`;
-            message += `   • Precio: $${price.toFixed(0)}%0A%0A`;
+            message += `   • Precio: ${formatCOP(price)}%0A%0A`;
             contadorProductos++;
         });
         
@@ -483,7 +654,7 @@ function generateWhatsAppMessage() {
             }
             // omitimos fecha/hora según petición del usuario
             message += `   • Cant: ${item.quantity}%0A`;
-            message += `   • Precio: $${price.toFixed(0)}%0A%0A`;
+            message += `   • Precio: ${formatCOP(price)}%0A%0A`;
             contadorReservas++;
         });
         
@@ -499,7 +670,7 @@ function generateWhatsAppMessage() {
             message += `${index + 1}. ${item.name}%0A`;
             message += `   • Categoría: ${item.category}%0A`;
             message += `   • Cantidad: ${item.quantity}%0A`;
-            message += `   • Precio: $${price.toFixed(0)}%0A%0A`;
+            message += `   • Precio: ${formatCOP(price)}%0A%0A`;
         });
         
     } else if (hasReserva) {
@@ -551,7 +722,7 @@ function generateWhatsAppMessage() {
                 totalForMessage += p * (ci.quantity || 1);
             });
             message += '━━━━━━━━━━━━━━━━━━%0A';
-            message += `*TOTAL: $${totalForMessage.toFixed(0)}*%0A%0A`;
+            message += `*TOTAL: ${formatCOP(totalForMessage)}*%0A%0A`;
 
             message += 'Por favor confirma disponibilidad. Gracias.%0A';
 
@@ -570,7 +741,7 @@ function generateWhatsAppMessage() {
                 message += `${index + 1}. ${item.name}%0A`;
                 message += `   • Categoría: ${item.category}%0A`;
                 message += `   • Cantidad: ${item.quantity}%0A`;
-                message += `   • Precio: $${price.toFixed(0)}%0A%0A`;
+                message += `   • Precio: ${formatCOP(price)}%0A%0A`;
             });
         }
     }
@@ -578,7 +749,7 @@ function generateWhatsAppMessage() {
             // Añadir total aquí solo si no se incluyó antes
             if (!totalIncludedInMessage) {
                 message += '━━━━━━━━━━━━━━━━━━%0A';
-                message += `💰 *TOTAL: $${total.toFixed(0)}*%0A%0A`;
+                message += `💰 *TOTAL: ${formatCOP(total)}*%0A%0A`;
             }
     // Si hay bookingData con nombre de cliente, anteponerlo al mensaje
     try {
@@ -647,7 +818,7 @@ function showClientNameModal(onConfirm) {
     modal.id = 'clientNameModal';
     Object.assign(modal.style, {
         position: 'fixed', inset: '0', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: 'rgba(0,0,0,0.6)', zIndex: '2000'
+        background: 'rgba(0,0,0,0.6)', zIndex: '20050'
     });
 
     const box = document.createElement('div');

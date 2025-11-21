@@ -165,8 +165,9 @@ function loadServiceFromURL() {
         const priceParam = urlParams.get('price');
         
         if (serviceParam && priceParam) {
-            AppState.selectedService = decodeURIComponent(serviceParam);
-            AppState.servicePrice = decodeURIComponent(priceParam);
+            // URLSearchParams already decodes percent-encoding; use values directly
+            AppState.selectedService = serviceParam;
+            AppState.servicePrice = priceParam;
         } else {
             // Fallback: datos del localStorage
             const savedService = localStorage.getItem('selectedService');
@@ -184,6 +185,28 @@ function loadServiceFromURL() {
         // En caso de error, mostrar pantalla de no servicio
         showNoServiceScreen();
     }
+}
+
+// Normalizar precio (copiado/compatible con servicios.js normalizePrice)
+function normalizePrice(input) {
+    if (input === null || input === undefined) return '0';
+    let s = String(input).trim();
+    s = s.replace(/[^0-9.,-]/g, '');
+    const hasComma = s.indexOf(',') !== -1;
+    const hasDot = s.indexOf('.') !== -1;
+    if (hasDot && !hasComma) {
+        const parts = s.split('.');
+        const lastLen = parts[parts.length - 1] ? parts[parts.length - 1].length : 0;
+        if (parts.length >= 2 && lastLen === 3) {
+            s = parts.join('');
+        }
+    }
+    if (hasComma) {
+        s = s.replace(/\./g, '');
+        s = s.replace(/,/g, '.');
+    }
+    if (s === '' || s === '.' || s === ',') return '0';
+    return s;
 }
 
 // Actualizar la visualización del servicio
@@ -343,7 +366,10 @@ function handleNextButton() {
 // Construir objeto de reserva y añadir al carrito (similar a servicios.js)
 function addReservationToCart() {
     const serviceName = AppState.selectedService || localStorage.getItem('selectedService') || '';
-    const price = AppState.servicePrice || localStorage.getItem('servicePrice') || '0';
+    // Normalize price to numeric string
+    const rawPrice = AppState.servicePrice || localStorage.getItem('servicePrice') || '0';
+    const price = normalizePrice(rawPrice);
+    console.debug('barberos: normalizePrice', { rawPrice, normalized: price });
     const barberName = AppState.selectedBarber ? AppState.selectedBarber.name : (JSON.parse(localStorage.getItem('selectedBarber') || 'null') || {}).name || '';
 
     if (!serviceName) return;
@@ -425,7 +451,7 @@ function handleBackButton() {
 function saveBookingData() {
     const bookingData = {
         service: AppState.selectedService,
-        servicePrice: AppState.servicePrice,
+        servicePrice: normalizePrice(AppState.servicePrice),
         barber: AppState.selectedBarber,
         timestamp: new Date().toISOString()
     };
@@ -433,7 +459,7 @@ function saveBookingData() {
     try {
         localStorage.setItem('bookingData', JSON.stringify(bookingData));
         localStorage.setItem('selectedService', AppState.selectedService);
-        localStorage.setItem('servicePrice', AppState.servicePrice);
+        localStorage.setItem('servicePrice', normalizePrice(AppState.servicePrice));
         localStorage.setItem('selectedBarber', JSON.stringify(AppState.selectedBarber));
     } catch (error) {
         console.error('Error guardando datos de reserva:', error);

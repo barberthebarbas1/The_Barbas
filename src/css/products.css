@@ -148,8 +148,9 @@ nav {
     position: fixed;
     top: 0;
     right: 0;
-    width: 90%;
-    max-width: 420px;
+    /* slightly narrower to avoid covering too much screen */
+    width: 84%;
+    max-width: 360px;
     height: 100vh;
     background: rgba(0, 0, 0, 0.98);
     z-index: 10002;
@@ -181,7 +182,6 @@ nav {
 body.cart-open,
 body.filters-open {
     overflow: hidden !important;
-    touch-action: none;
 }
 
 /* Robust scroll lock used by JS: apply to html/body when sidebars open */
@@ -513,7 +513,23 @@ html.scroll-locked, body.scroll-locked {
 }
 
 .filters-header-mobile {
-    display: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        /* match cart header width/constraints */
+        width: min(88vw, 360px);
+        max-width: 360px;
+        /* use same header height and padding as cart header */
+        height: var(--cart-header-height);
+        padding: 10px 14px;
+        background: rgba(0, 0, 0, 1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        z-index: 201;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
 }
 
 .mobile-filter-toggle {
@@ -878,8 +894,8 @@ footer p {
         position: fixed;
         top: 0;
         left: 0;
-        width: 90%;
-        max-width: 400px;
+        width: 88%;
+        max-width: 340px;
         height: 100vh;
         z-index: 10002;
         transform: translateX(-100%);
@@ -910,8 +926,8 @@ footer p {
         position: fixed;
         top: 0;
         left: 0;
-        width: min(92vw, 420px);
-        max-width: 420px;
+        width: min(88vw, 340px);
+        max-width: 340px;
         padding: 20px;
         background: rgba(0, 0, 0, 1);
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -932,8 +948,8 @@ footer p {
         position: fixed;
         top: 0;
         right: 0;
-        width: min(92vw, 420px);
-        max-width: 420px;
+        width: min(88vw, 360px);
+        max-width: 360px;
         padding: 20px;
         background: rgba(0, 0, 0, 1);
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -1062,20 +1078,24 @@ footer p {
 @media (max-width: 768px) {
     .cart-sidebar,
     .filters-sidebar {
-        /* don't take whole screen width on mobile: allow a margin so page context is visible */
-        width: min(92vw, 420px);
-        max-width: 420px;
+        width: min(90vw, 340px);
+        max-width: 340px;
         height: 100vh !important;
+        min-height: 100vh !important;
         top: 0 !important;
+        left: auto !important;
+        right: 0 !important;
+        position: fixed !important;
         box-sizing: border-box;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: auto !important; /* allow the sidebar itself to scroll */
         -webkit-transform: translateX(100%);
         transform: translateX(100%);
         -webkit-transition: -webkit-transform 0.35s ease;
         transition: transform 0.35s ease;
-        /* reserve space for the mobile browser chrome + header inside the sidebar */
-        --cart-header-height: 48px;
-        padding-top: calc(var(--cart-header-height) + env(safe-area-inset-top, 10px));
-        box-sizing: border-box;
+        z-index: 10005 !important;
+        background: rgba(0,0,0,0.98);
     }
 
     /* Filters slide from left — ensure filter starts off-screen to the left */
@@ -1086,10 +1106,25 @@ footer p {
         transform: translateX(-100%);
     }
 
-    .cart-sidebar.active,
+    /* Active states: keep cart anchored to the right and filters anchored to the left */
+    .cart-sidebar.active {
+        -webkit-transform: translateX(0) !important;
+        transform: translateX(0) !important;
+        height: 100vh !important;
+        min-height: 100vh !important;
+        top: 0 !important;
+        left: auto !important;
+        right: 0 !important;
+    }
+
     .filters-sidebar.active {
         -webkit-transform: translateX(0) !important;
         transform: translateX(0) !important;
+        height: 100vh !important;
+        min-height: 100vh !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: auto !important;
     }
 
     /* Cart should slide from the right edge and be anchored to the right */
@@ -1110,35 +1145,43 @@ footer p {
     .cart-sidebar {
         /* ensure the sidebar itself does not start under the browser bar */
         top: 0 !important;
-        height: 100vh !important;
+        /* Use dynamic viewport units to handle mobile browser chrome properly */
+        height: 100dvh !important;
+        max-height: 100dvh !important;
+        /* define header/footer heights used for inner calculations */
+        --cart-header-height: 64px;
+        --cart-footer-height: 72px;
     }
 
+    /* Keep header in normal flow inside the sidebar to avoid stacking/interaction issues */
     .cart-sidebar .cart-header {
-        position: fixed;
-        top: env(safe-area-inset-top, 0);
-        right: 0;
-        width: min(92vw, 420px);
-        max-width: 420px;
+        position: relative;
+        top: auto;
+        right: auto;
+        width: 100%;
+        max-width: none;
         height: var(--cart-header-height);
-        padding: 8px 12px;
+        padding: 10px 14px;
         background: rgba(0,0,0,1);
         border-bottom: 1px solid rgba(255,255,255,0.08);
-        z-index: 220;
-        transform: translateX(100%);
-        transition: transform 0.3s ease;
+        z-index: 1;
         box-sizing: border-box;
+        transform: none !important;
     }
 
-    .cart-sidebar.active .cart-header {
-        transform: translateX(0);
-    }
-
-    /* Adjust cart-items height so they fit between header and footer */
+    /* Make the cart content flexible so the sidebar manages overall height
+       and the inner area can scroll reliably. JS will set an explicit height
+       when necessary for certain mobile viewports. */
     .cart-items {
         padding: 8px;
-        /* make room for header and footer inside the 100vh viewport */
-        max-height: calc(100vh - env(safe-area-inset-top, 0) - var(--cart-header-height) - 72px);
+        flex: 1 1 auto;
+        min-height: 0; /* needed so flex children can shrink and internal scroll works */
         overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-top: 4px;
+          /* Ensure cart-items never grows so much that footer is pushed offscreen
+              by limiting its max-height to remaining viewport after header/footer */
+          max-height: calc(100dvh - var(--cart-header-height) - var(--cart-footer-height));
     }
 
     .cart-footer {
@@ -1147,28 +1190,16 @@ footer p {
         padding: 10px 12px;
         z-index: 230;
         background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,1));
-    }
-
-    /* Scoped mobile header rules: match filters header behavior without breaking desktop */
-    .cart-sidebar .cart-header {
-        position: fixed;
-        top: 0;
-        right: 0;
-        width: min(92vw, 420px);
-        max-width: 420px;
-        padding: 12px;
-        background: rgba(0, 0, 0, 1);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        z-index: 201;
-        transform: translateX(100%);
-        transition: transform 0.3s ease;
-        height: 44px;
+        height: var(--cart-footer-height);
         box-sizing: border-box;
     }
 
-    .cart-sidebar.active .cart-header {
-        transform: translateX(0);
-    }
+
+    /* Ensure header stays in flow and sidebar handles scrolling */
+    .cart-sidebar .cart-header { transform: none !important; }
+    /* Make header/footer sticky inside the scrollable sidebar so the entire sidebar scrolls */
+    .cart-sidebar .cart-header { position: sticky; top: 0; z-index: 2; background: rgba(0,0,0,0.98); }
+    .cart-sidebar .cart-footer { position: sticky; bottom: 0; z-index: 2; background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,1)); }
 
     /* Compact the body of the cart so Finalizar is visible */
     .cart-items { padding: 8px; }
@@ -1183,6 +1214,7 @@ footer p {
         border-top: 1px solid rgba(255,255,255,0.05);
         background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,1));
         z-index: 205;
+        flex-shrink: 0;
     }
 
     .cart-total { margin-bottom: 8px; }
@@ -1193,4 +1225,26 @@ footer p {
 
     /* Make overlay cover everything below sidebars */
     .cart-overlay { z-index: 9998; }
+
+    /* Mobile cart header fixes: don't translate the fixed header separately.
+       Let the sidebar slide in/out while the header remains fixed and visible.
+       Also ensure sidebar z-index is above the overlay. */
+    .cart-sidebar { z-index: 10005 !important; }
+    .cart-overlay {
+        z-index: 10000 !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        min-height: 100vh !important;
+    }
+    .cart-sidebar .cart-header {
+        transform: none !important;
+        transition: none !important;
+        z-index: 101;
+    }
+    .cart-sidebar.active .cart-header {
+        transform: none !important;
+    }
 }

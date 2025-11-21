@@ -210,15 +210,46 @@ function saveServiceSelection() {
     }
 }
 
+// Normalizar precio: quitar símbolos y separadores de miles, usar punto decimal si aplica
+function normalizePrice(input) {
+    if (input === null || input === undefined) return '0';
+    let s = String(input).trim();
+    // eliminar cualquier caracter que no sea dígito, punto o coma
+    s = s.replace(/[^0-9.,-]/g, '');
+    // Si hay puntos como separador de miles, eliminarlos (ej: 15.000 -> 15000)
+    // Reemplazar comas por punto en caso de valores decimales escritos con coma
+    const hasComma = s.indexOf(',') !== -1;
+    const hasDot = s.indexOf('.') !== -1;
+    if (hasDot && !hasComma) {
+        // Puede ser separador de miles o decimal.
+        // Si el último grupo tiene 3 dígitos (ej. 15.000) lo tratamos como separador de miles.
+        const parts = s.split('.');
+        const lastLen = parts[parts.length - 1] ? parts[parts.length - 1].length : 0;
+        if (parts.length >= 2 && lastLen === 3) {
+            s = parts.join('');
+        }
+        // si no cumple la regla, dejamos el punto como separador decimal
+    }
+    if (hasComma) {
+        // cambiar coma por punto para parseFloat
+        s = s.replace(/\./g, ''); // eliminar puntos residuales
+        s = s.replace(/,/g, '.');
+    }
+    // Si queda vacio, devolver 0
+    if (s === '' || s === '.' || s === ',') return '0';
+    return s;
+}
+
 // Manejar click del botón "Continuar"
 function handleContinueButton() {
     if (!ServicesState.selectedService) {
         showNotification('Por favor selecciona un servicio', 'warning');
         return;
     }
+    // Let URLSearchParams handle encoding (don't double-encode)
     const params = new URLSearchParams({
-        service: encodeURIComponent(ServicesState.selectedService),
-        price: encodeURIComponent(ServicesState.selectedPrice)
+        service: ServicesState.selectedService,
+        price: ServicesState.selectedPrice
     });
 
     window.location.href = `barberos.html?${params.toString()}`;
@@ -227,7 +258,9 @@ function handleContinueButton() {
 // Construir objeto de reserva y añadir al carrito
 function addReservationToCart() {
     const name = ServicesState.selectedService;
-    const price = ServicesState.selectedPrice || '0';
+    // Normalize price string (e.g. "$15.000") to numeric string like "15000"
+    const priceRaw = ServicesState.selectedPrice || '0';
+    const price = normalizePrice(priceRaw);
 
     // Intentar obtener imagen y categoría desde la tarjeta seleccionada usando búsqueda robusta
     let image = '';
