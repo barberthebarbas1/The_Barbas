@@ -93,6 +93,22 @@ try {
     console.warn('No se pudo cargar el carrito desde localStorage:', err);
     cart = [];
 }
+// Migrar/normalizar cualquier item antiguo en el carrito para asegurar priceNumeric
+try {
+    cart = (cart || []).map(it => {
+        try {
+            if (!it) return it;
+            if (typeof it.priceNumeric !== 'number') {
+                const pn = Number(normalizePrice(it.price || it.priceDisplay || 0));
+                try { Object.defineProperty(it, 'priceNumeric', { value: pn, writable: false, configurable: true, enumerable: true }); } catch (e) { it.priceNumeric = pn; }
+                try { Object.defineProperty(it, 'price', { value: formatCOP(pn), writable: false, configurable: true, enumerable: true }); } catch (e) { it.price = formatCOP(pn); }
+            }
+            return it;
+        } catch (e) { return it; }
+    });
+} catch (e) {
+    console.warn('Error normalizando carrito existente:', e);
+}
 
 // Helper global: formatear valores en COP (sin decimales)
 function formatCOP(value) {
@@ -153,8 +169,9 @@ function updateCartUI() {
     } else {
         let total = 0;
         cartItems.innerHTML = cart.map((item, index) => {
-            const price = parseFloat(item.price) || 0;
-            const itemTotal = price * item.quantity;
+            const priceNum = (typeof item.priceNumeric === 'number') ? item.priceNumeric : Number(normalizePrice(item.price || 0));
+            const qty = item.quantity || 1;
+            const itemTotal = priceNum * qty;
             total += itemTotal;
             return `
                 <div class="cart-item">
@@ -248,7 +265,7 @@ function updateCheckoutButton() {
         } else {
             checkoutBtnEl.disabled = false;
             const total = cart.reduce((sum, it) => {
-                const p = parseFloat(it.price) || 0;
+                const p = (typeof it.priceNumeric === 'number') ? it.priceNumeric : Number(normalizePrice(it.price || 0));
                 return sum + p * (it.quantity || 1);
             }, 0);
             if (btnTextEl) btnTextEl.textContent = `Finalizar ${formatCOP(total)}`;
@@ -265,18 +282,36 @@ function addItemToCart(item, feedbackButton) {
     if (!item || !item.name) return;
 
     const existingItemIndex = cart.findIndex(ci => ci.name === item.name);
-    if (existingItemIndex !== -1) {
-        cart[existingItemIndex].quantity = (cart[existingItemIndex].quantity || 0) + (item.quantity || 1);
-    } else {
-        cart.push({
-            name: item.name,
-            category: item.category || '',
-            price: item.price || '0',
-            image: item.image || '',
-            quantity: item.quantity || 1,
-            itemType: item.itemType || 'producto'
-        });
-    }
+        // Asegurar que el item tenga un precio numérico inmutable y una representación formateada
+        try {
+            const priceNum = (typeof item.priceNumeric === 'number') ? item.priceNumeric : Number(normalizePrice(item.price || item.priceDisplay || 0));
+            // crear copia limpia para evitar que el objeto externo sea mutado
+            const safeItem = Object.assign({}, item, {});
+            // definir propiedades inmutables para precio, pero permitir modificar cantidad
+            try { Object.defineProperty(safeItem, 'priceNumeric', { value: Number(priceNum), writable: false, configurable: true, enumerable: true }); } catch (e) { safeItem.priceNumeric = Number(priceNum); }
+            try { Object.defineProperty(safeItem, 'price', { value: formatCOP(Number(priceNum)), writable: false, configurable: true, enumerable: true }); } catch (e) { safeItem.price = formatCOP(Number(priceNum)); }
+            item = safeItem;
+        } catch (e) {
+            // si algo falla, asegurarse de tener un precio numérico por defecto
+            const pn = Number(normalizePrice(item.price || 0));
+            try { Object.defineProperty(item, 'priceNumeric', { value: pn, writable: false, configurable: true, enumerable: true }); } catch (ex) { item.priceNumeric = pn; }
+            try { Object.defineProperty(item, 'price', { value: formatCOP(pn), writable: false, configurable: true, enumerable: true }); } catch (ex) { item.price = formatCOP(pn); }
+        }
+
+        if (existingItemIndex !== -1) {
+            // si ya existe, incrementar cantidad (usamos 'quantity' como nombre consistente)
+            cart[existingItemIndex].quantity = (cart[existingItemIndex].quantity || 1) + (item.quantity || 1);
+        } else {
+            // añadir con quantity default
+            const toAdd = Object.assign({ quantity: item.quantity || 1, itemType: item.itemType || 'producto' }, item);
+            // asegurar propiedades priceNumeric/price presentes y no-writable
+            if (typeof toAdd.priceNumeric !== 'number') {
+                const pn = Number(normalizePrice(toAdd.price || 0));
+                try { Object.defineProperty(toAdd, 'priceNumeric', { value: pn, writable: false, configurable: true, enumerable: true }); } catch (ex) { toAdd.priceNumeric = pn; }
+                try { Object.defineProperty(toAdd, 'price', { value: formatCOP(pn), writable: false, configurable: true, enumerable: true }); } catch (ex) { toAdd.price = formatCOP(pn); }
+            }
+            cart.push(toAdd);
+        }
 
     updateCartUI();
 
@@ -377,7 +412,18 @@ function showFloatingNotification(text, duration = 2000) {
 // Exponer API pública para que otras páginas (ej. servicios.js) puedan agregar items
 window.CartApp = window.CartApp || {};
 window.CartApp.addItem = function(item) {
-    addItemToCart(item);
+    if (!item) return;
+    // normalize price if present
+    try {
+        const priceNum = (typeof item.priceNumeric === 'number') ? item.priceNumeric : Number(normalizePrice(item.price || item.priceDisplay || 0));
+        const safeItem = Object.assign({}, item, {});
+        try { Object.defineProperty(safeItem, 'priceNumeric', { value: Number(priceNum), writable: false, configurable: true, enumerable: true }); } catch (e) { safeItem.priceNumeric = Number(priceNum); }
+        try { Object.defineProperty(safeItem, 'price', { value: formatCOP(Number(priceNum)), writable: false, configurable: true, enumerable: true }); } catch (e) { safeItem.price = formatCOP(Number(priceNum)); }
+        if (typeof safeItem.quantity !== 'number') safeItem.quantity = item.quantity || item.qty || 1;
+        addItemToCart(safeItem);
+    } catch (e) {
+        addItemToCart(item);
+    }
 };
 window.CartApp.getCart = function() {
     return cart;
@@ -624,11 +670,12 @@ function generateWhatsAppMessage() {
         message += ' *PRODUCTOS*%0A%0A';
         let contadorProductos = 1;
         cart.filter(item => item.itemType === 'producto').forEach((item) => {
-            const price = parseFloat(item.price) || 0;
-            const itemTotal = price * item.quantity;
+            const price = (typeof item.priceNumeric === 'number') ? item.priceNumeric : Number(normalizePrice(item.price || 0));
+            const qty = item.quantity || 1;
+            const itemTotal = price * qty;
             total += itemTotal;
             message += `${contadorProductos}. ${item.name}%0A`;
-            message += `   • Cant: ${item.quantity}%0A`;
+            message += `   • Cant: ${qty}%0A`;
             message += `   • Precio: ${formatCOP(price)}%0A%0A`;
             contadorProductos++;
         });
@@ -644,8 +691,9 @@ function generateWhatsAppMessage() {
         }
 
         reservas.forEach((item) => {
-            const price = parseFloat(item.price) || 0;
-            const itemTotal = price * item.quantity;
+            const price = (typeof item.priceNumeric === 'number') ? item.priceNumeric : Number(normalizePrice(item.price || 0));
+            const qty = item.quantity || 1;
+            const itemTotal = price * qty;
             total += itemTotal;
             message += `${contadorReservas}. ${item.name}%0A`;
             if (item.barberPhone) {
@@ -653,7 +701,7 @@ function generateWhatsAppMessage() {
                 message += `   • Tel Barbero: ${item.barberPhone}%0A`;
             }
             // omitimos fecha/hora según petición del usuario
-            message += `   • Cant: ${item.quantity}%0A`;
+            message += `   • Cant: ${qty}%0A`;
             message += `   • Precio: ${formatCOP(price)}%0A%0A`;
             contadorReservas++;
         });
@@ -664,12 +712,13 @@ function generateWhatsAppMessage() {
         message += '━━━━━━━━━━━━━━━━━━%0A%0A';
         
         cart.forEach((item, index) => {
-            const price = parseFloat(item.price) || 0;
-            const itemTotal = price * item.quantity;
+            const price = (typeof item.priceNumeric === 'number') ? item.priceNumeric : Number(normalizePrice(item.price || 0));
+            const qty = item.quantity || 1;
+            const itemTotal = price * qty;
             total += itemTotal;
             message += `${index + 1}. ${item.name}%0A`;
             message += `   • Categoría: ${item.category}%0A`;
-            message += `   • Cantidad: ${item.quantity}%0A`;
+            message += `   • Cantidad: ${qty}%0A`;
             message += `   • Precio: ${formatCOP(price)}%0A%0A`;
         });
         
@@ -718,7 +767,7 @@ function generateWhatsAppMessage() {
             // Total
             let totalForMessage = 0;
             cart.forEach(ci => {
-                const p = parseFloat(ci.price) || 0;
+                const p = (typeof ci.priceNumeric === 'number') ? ci.priceNumeric : Number(normalizePrice(ci.price || 0));
                 totalForMessage += p * (ci.quantity || 1);
             });
             message += '━━━━━━━━━━━━━━━━━━%0A';
@@ -735,12 +784,13 @@ function generateWhatsAppMessage() {
             message = '📅 *NUEVA RESERVA*%0A';
             message += '━━━━━━━━━━━━━━━━━━%0A%0A';
             cart.forEach((item, index) => {
-                const price = parseFloat(item.price) || 0;
-                const itemTotal = price * item.quantity;
+                const price = (typeof item.priceNumeric === 'number') ? item.priceNumeric : Number(normalizePrice(item.price || 0));
+                const qty = item.quantity || 1;
+                const itemTotal = price * qty;
                 total += itemTotal;
                 message += `${index + 1}. ${item.name}%0A`;
                 message += `   • Categoría: ${item.category}%0A`;
-                message += `   • Cantidad: ${item.quantity}%0A`;
+                message += `   • Cantidad: ${qty}%0A`;
                 message += `   • Precio: ${formatCOP(price)}%0A%0A`;
             });
         }

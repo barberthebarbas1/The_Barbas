@@ -95,7 +95,23 @@ function selectVipServiceCard(serviceCard, serviceName, servicePrice) {
     // Seleccionar la tarjeta actual
     serviceCard.classList.add('selected');
     VipState.selectedService = serviceName;
-    VipState.selectedPrice = servicePrice;
+    // Normalizar y almacenar precio como número inmutable y formato para UI
+    try {
+        const priceNum = normalizePrice(servicePrice);
+        // Display-friendly string
+        VipState.selectedPrice = formatCOP(priceNum);
+
+        // Define una propiedad no writable (inmutable) para el precio numérico
+        try { if (Object.prototype.hasOwnProperty.call(VipState, 'selectedPriceNumeric')) delete VipState.selectedPriceNumeric; } catch (e) {}
+        Object.defineProperty(VipState, 'selectedPriceNumeric', {
+            value: priceNum,
+            writable: false,
+            configurable: true,
+            enumerable: true
+        });
+    } catch (e) {
+        VipState.selectedPrice = servicePrice;
+    }
     
     // Actualizar UI
     updateVipSelectionSummary();
@@ -140,6 +156,7 @@ function clearVipServiceSelection() {
     
     VipState.selectedService = null;
     VipState.selectedPrice = null;
+    try { if (Object.prototype.hasOwnProperty.call(VipState, 'selectedPriceNumeric')) delete VipState.selectedPriceNumeric; } catch (e) {}
     
     showAllVipServiceCards();
     hideSelectionSummary();
@@ -249,18 +266,23 @@ function disableContinueButton() {
 // Guardar selección de servicio VIP
 function saveVipServiceSelection() {
     try {
+        // Persistir servicio y precio (numérico) en localStorage para evitar mutaciones
         localStorage.setItem('selectedVipService', VipState.selectedService);
-        localStorage.setItem('vipServicePrice', VipState.selectedPrice);
-        localStorage.setItem('selectedService', VipState.selectedService); // Para compatibilidad
-        localStorage.setItem('servicePrice', VipState.selectedPrice); // Para compatibilidad
-        
+        // Guardar precio numérico para usos posteriores (checkout / carrito)
+        const numericPrice = (typeof VipState.selectedPriceNumeric === 'number') ? VipState.selectedPriceNumeric : normalizePrice(VipState.selectedPrice || 0);
+        localStorage.setItem('vipServicePrice', String(numericPrice));
+        // Compatibilidad: guardar también short keys used elsewhere
+        localStorage.setItem('selectedService', VipState.selectedService);
+        localStorage.setItem('servicePrice', String(numericPrice));
+
         const selectionData = {
             service: VipState.selectedService,
-            price: VipState.selectedPrice,
+            priceNumeric: numericPrice,
+            priceDisplay: VipState.selectedPrice,
             isVip: true,
             timestamp: new Date().toISOString()
         };
-        
+
         localStorage.setItem('vipServiceSelection', JSON.stringify(selectionData));
     } catch (error) {
         console.error('Error guardando selección VIP:', error);
@@ -275,12 +297,13 @@ function handleContinueButton() {
     }
     
     // Navegar a la página de barberos con parámetros VIP
+    // Pasar precio numérico en la URL para evitar formatos que se rompen
+    const priceForUrl = (typeof VipState.selectedPriceNumeric === 'number') ? String(VipState.selectedPriceNumeric) : String(normalizePrice(VipState.selectedPrice || 0));
     const params = new URLSearchParams({
-        service: encodeURIComponent(VipState.selectedService),
-        price: encodeURIComponent(VipState.selectedPrice),
+        service: VipState.selectedService,
+        price: priceForUrl,
         vip: 'true'
     });
-    
     window.location.href = `barberos.html?${params.toString()}`;
 }
 
@@ -461,6 +484,44 @@ window.goBackToServices = goBackToServices;
 window.VipApp = {
     getSelectedService: () => VipState.selectedService,
     getSelectedPrice: () => VipState.selectedPrice,
+    getSelectedPriceNumeric: () => (typeof VipState.selectedPriceNumeric === 'number' ? VipState.selectedPriceNumeric : normalizePrice(VipState.selectedPrice || 0)),
     clearSelection: clearVipServiceSelection,
     showNotification: showVipNotification
 };
+
+// --- Helpers para precios (normalizar y formatear) ---
+function normalizePrice(input) {
+    if (input === null || input === undefined) return 0;
+    let s = String(input).trim();
+    // quitar símbolos no numéricos salvo separadores
+    s = s.replace(/[^0-9.,-]/g, '');
+    if (s === '') return 0;
+
+    // Si hay puntos y comas, aplicar heurística: si el último grupo tiene 3 dígitos, tratarlos como miles
+    const parts = s.split(/[,\.]/);
+    if (parts.length > 1) {
+        const last = parts[parts.length - 1];
+        if (last.length === 3) {
+            // unir todo (quitar separadores de miles)
+            s = parts.join('');
+        } else {
+            // tratar coma como decimal, quitar otros puntos
+            s = s.replace(/\./g, '').replace(',', '.');
+        }
+    }
+
+    // Eliminar cualquier caracter sobrante
+    s = s.replace(/[^0-9.-]/g, '');
+    const n = Number(s);
+    if (Number.isNaN(n)) return 0;
+    return Math.round(n);
+}
+
+function formatCOP(value) {
+    try {
+        const n = Number(value) || 0;
+        return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(n);
+    } catch (e) {
+        return String(value);
+    }
+}
