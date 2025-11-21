@@ -384,8 +384,8 @@ function goBack() {
     localStorage.removeItem('servicePrice');
     localStorage.removeItem('serviceSelection');
     
-    // Redirigir al index
-    window.location.href = '../index.html';
+    // Redirigir al index en la raíz
+    window.location.href = '../../index.html';
 }
 
 // Mostrar notificaciones al usuario
