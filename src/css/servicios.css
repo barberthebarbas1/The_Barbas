@@ -7,7 +7,7 @@
     --gray-medium: #666666;
     --gray-light: #999999;
     --gray-very-light: #cccccc;
-    --accent-green: #748d97;
+    --accent-green: #464646;
     
     /* Transparencias blancas */
     --white-subtle: rgba(255, 255, 255, 0.03);
@@ -92,7 +92,7 @@ body {
 /* Tarjetas de servicios */
 .service-card {
     background: var(--gray-dark);
-    border-radius: 20px;
+    border-radius: 10px;
     padding: 30px 25px;
     box-shadow: 0 8px 30px var(--black-overlay);
     transition: var(--transition-smooth);
