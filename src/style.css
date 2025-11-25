@@ -143,12 +143,40 @@ nav{max-width:1100px;margin:0 auto;padding:0 16px;display:flex;align-items:cente
 
 /* CTA button below carousel */
 .cta-wrap{display:flex;justify-content:center;margin:18px 0 36px}
-.cta-btn{
-	display:inline-flex;align-items:center;gap:12px;padding:14px 28px;border:2px solid rgba(255,255,255,0.95);color:#fff;background:transparent;text-decoration:none;border-radius:4px;font-weight:700;font-size:14px;letter-spacing:1px;
-	text-transform:uppercase;box-shadow:none;transition:transform .12s ease,box-shadow .12s ease;
+
+.cta-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 12px;
+	padding: 14px 28px;
+	border: 2px solid #009e60;
+	color: #fff;
+	background: linear-gradient(90deg, #009e60 0%, #00c97b 100%);
+	text-decoration: none;
+	border-radius: 6px;
+	font-weight: 800;
+	font-size: 15px;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	box-shadow: 0 4px 18px rgba(0, 158, 96, 0.18);
+	transition: transform .12s ease, box-shadow .12s ease, background .18s;
 }
-.cta-btn .cta-arrow{color:#ff7a1a;font-weight:800;font-size:18px}
-.cta-btn:active{transform:translateY(1px)}
+.cta-btn .cta-arrow {
+	color: #fff;
+	font-weight: 900;
+	font-size: 18px;
+	text-shadow: 0 2px 8px #009e6044;
+}
+.cta-btn:hover, .cta-btn:focus {
+	background: linear-gradient(90deg, #00c97b 0%, #009e60 100%);
+	box-shadow: 0 6px 24px rgba(0, 158, 96, 0.28);
+	transform: scale(1.04);
+	border-color: #00c97b;
+}
+.cta-btn:active {
+	transform: translateY(1px) scale(0.98);
+	background: linear-gradient(90deg, #009e60 0%, #00c97b 100%);
+}
 
 @media (max-width:420px){
 	.cta-btn{padding:12px 20px;font-size:13px}
@@ -157,7 +185,22 @@ nav{max-width:1100px;margin:0 auto;padding:0 16px;display:flex;align-items:cente
 /* Footer styles */
 .site-footer{background:#141414;color:#cfd9df;padding:44px 0 18px;font-size:15px}
 .footer-inner{max-width:1100px;margin:0 auto;padding:0 16px;display:flex;gap:32px}
-.site-footer .col{flex:1}
+.site-footer .col{flex:1;min-width:180px}
+.footer-payments h4{color:#fff;margin:0 0 12px;font-size:14px}
+.footer-payments ul{list-style:disc;padding-left:18px;margin:0;color:#aeb7bd}
+.footer-payments ul li{
+	margin-bottom:4px;
+	font-weight:700;
+	color:#e0e3e6;
+	background:linear-gradient(90deg,rgba(233, 233, 233, 0.18) 0%,rgba(30,32,34,0.18) 100%);
+	border-radius:5px;
+	padding:4px 10px;
+	display:inline-block;
+	margin-right:8px;
+	box-shadow:0 2px 8px rgba(60,65,70,0.10);
+	letter-spacing:0.5px;
+	transition:none;
+}
 .brand-logo{font-weight:800;font-size:20px;color:#fff;margin-bottom:10px}
 .footer-brand p{color:#aeb7bd;max-width:320px}
 .footer-contact h4,.footer-news h4{color:#fff;margin:0 0 12px;font-size:14px}
