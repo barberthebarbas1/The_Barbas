@@ -6,7 +6,7 @@ const AppState = {
     barbersData: [
         {
             id: 1,
-            name: 'Carlos Méndez',
+            name: 'Julio Teran',
             specialty: 'Especialista en Cortes Clásicos',
             experience: '8 años de experiencia',
             rating: 4.9,
@@ -15,7 +15,7 @@ const AppState = {
         },
         {
             id: 2,
-            name: 'Diego Rodríguez',
+            name: 'Jesus Guitierrez',
             specialty: 'Especialista en Estilos Modernos',
             experience: '6 años de experiencia',
             rating: 4.8,
@@ -24,7 +24,7 @@ const AppState = {
         },
         {
             id: 3,
-            name: 'Miguel Torres',
+            name: 'Deivyd Buitrago',
             specialty: 'Especialista en Barbas y Bigotes',
             experience: '10 años de experiencia',
             rating: 4.7,

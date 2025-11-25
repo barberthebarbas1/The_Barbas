@@ -70,10 +70,13 @@ function handleServiceSelection(event) {
     }
     
     const serviceName = serviceCard.dataset.service;
-    const servicePrice = serviceCard.dataset.price;
-    
-    if (!serviceName || !servicePrice) {
+    let servicePrice = serviceCard.dataset.price;
+    // Permitir seleccionar servicios sin precio (como Tinte de Cabellos)
+    if (!serviceName) {
         return;
+    }
+    if (!servicePrice) {
+        servicePrice = 'A consultar';
     }
     
     // Si el servicio ya está seleccionado, deseleccionarlo
@@ -158,7 +161,8 @@ function updateSelectionSummary() {
         elements.selectedName.textContent = ServicesState.selectedService;
     }
     if (elements.selectedPrice) {
-        elements.selectedPrice.textContent = ServicesState.selectedPrice;
+        // Si el precio es vacío o nulo, mostrar "A consultar"
+        elements.selectedPrice.textContent = ServicesState.selectedPrice && ServicesState.selectedPrice !== '' ? ServicesState.selectedPrice : 'A consultar';
     }
     
     showSelectionSummary();

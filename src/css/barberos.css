@@ -165,7 +165,7 @@ body {
 /* Imagen del barbero */
 .barber-image {
     position: relative;
-    height: 250px;
+    height: 350px;
     overflow: hidden;
 }
 
@@ -463,7 +463,7 @@ body {
     }
     
     .barber-image {
-        height: 200px;
+        height: 350px;
     }
     
     .service-card {

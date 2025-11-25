@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="../css/barberos.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
+
 <body>
     <!-- Pantalla de error cuando no hay servicio seleccionado -->
     <div class="no-service-screen" id="noServiceScreen" style="display: none;">
@@ -15,7 +17,8 @@
                 <i class="fas fa-exclamation-triangle"></i>
             </div>
             <h2 class="error-title">¡Oops! No hay servicio seleccionado</h2>
-            <p class="error-message">Para acceder a esta página, primero debes seleccionar un servicio en la página anterior.</p>
+            <p class="error-message">Para acceder a esta página, primero debes seleccionar un servicio en la página
+                anterior.</p>
             <div class="error-actions">
                 <button class="btn btn-primary" onclick="redirectToServices()">
                     <i class="fas fa-arrow-left"></i>
@@ -49,6 +52,7 @@
             <!-- Barbero 1 -->
             <div class="barber-card" data-barber-id="1">
                 <div class="barber-image">
+                    <img src="../img/img-barberos/barbero1.png" alt="Carlos Méndez" class="barber-photo" />
                     <div class="barber-avatar" aria-hidden="true"></div>
                     <div class="barber-badge">
                         <i class="fas fa-star"></i>
@@ -56,17 +60,12 @@
                     </div>
                 </div>
                 <div class="barber-info">
-                    <h3 class="barber-name">Carlos Méndez</h3>
-                    <p class="barber-specialty">Especialista en Cortes Clásicos</p>
+                    <h3 class="barber-name">Julio Teran</h3>
                     <p class="barber-experience">8 años de experiencia</p>
                     <div class="barber-description">
-                        <p>Experto en cortes tradicionales y modernos. Especializado en barbas y bigotes con técnicas clásicas.</p>
-                    </div>
-                    <div class="barber-services">
                         <h4>Servicios Realizados:</h4>
-                        <div class="services-count" id="services-barber-1">
-                            <span class="loading">Cargando...</span>
-                        </div>
+                        <p>Cortes modernos, cortes clásicos, corte de niños, cortes con figuras, limpieza facial, cortes
+                            VIP, cortes premium, arreglo de barbas, lavados, tinturación. Entre otros.</p>
                     </div>
                 </div>
             </div>
@@ -74,6 +73,7 @@
             <!-- Barbero 2 -->
             <div class="barber-card" data-barber-id="2">
                 <div class="barber-image">
+                    <img src="../img/img-barberos/barbero2.png" alt="Diego Rodríguez" class="barber-photo" />
                     <div class="barber-avatar" aria-hidden="true"></div>
                     <div class="barber-badge">
                         <i class="fas fa-star"></i>
@@ -81,17 +81,11 @@
                     </div>
                 </div>
                 <div class="barber-info">
-                    <h3 class="barber-name">Diego Rodríguez</h3>
-                    <p class="barber-specialty">Especialista en Estilos Modernos</p>
-                    <p class="barber-experience">6 años de experiencia</p>
+                    <h3 class="barber-name">Jesus Guitierrez</h3>
+                    <p class="barber-experience">4 años de experiencia</p>
                     <div class="barber-description">
-                        <p>Creativo y vanguardista, experto en tendencias actuales y estilos juveniles. Fade y degradados perfectos.</p>
-                    </div>
-                    <div class="barber-services">
                         <h4>Servicios Realizados:</h4>
-                        <div class="services-count" id="services-barber-2">
-                            <span class="loading">Cargando...</span>
-                        </div>
+                        <p>Cortes clásicos, cortes modernos, cortes de niños, arreglo de barba, cortes con figuras, lavado de cabello, mascarilla.</p>
                     </div>
                 </div>
             </div>
@@ -99,6 +93,7 @@
             <!-- Barbero 3 -->
             <div class="barber-card" data-barber-id="3">
                 <div class="barber-image">
+                    <img src="../img/img-barberos/barbero3.png" alt="Miguel Torres" class="barber-photo" />
                     <div class="barber-avatar" aria-hidden="true"></div>
                     <div class="barber-badge">
                         <i class="fas fa-star"></i>
@@ -106,42 +101,11 @@
                     </div>
                 </div>
                 <div class="barber-info">
-                    <h3 class="barber-name">Miguel Torres</h3>
-                    <p class="barber-specialty">Especialista en Barbas y Bigotes</p>
-                    <p class="barber-experience">10 años de experiencia</p>
+                    <h3 class="barber-name">Deivyd Buitrago</h3>
+                    <p class="barber-experience">6 años de experiencia</p>
                     <div class="barber-description">
-                        <p>Maestro en el arte del afeitado tradicional. Experto en perfilado de barbas y cuidado facial masculino.</p>
-                    </div>
-                    <div class="barber-services">
                         <h4>Servicios Realizados:</h4>
-                        <div class="services-count" id="services-barber-3">
-                            <span class="loading">Cargando...</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Barbero 4 -->
-            <div class="barber-card" data-barber-id="4">
-                <div class="barber-image">
-                    <div class="barber-avatar" aria-hidden="true"></div>
-                    <div class="barber-badge">
-                        <i class="fas fa-star"></i>
-                        <span>5.0</span>
-                    </div>
-                </div>
-                <div class="barber-info">
-                    <h3 class="barber-name">Andrés Vela</h3>
-                    <p class="barber-specialty">Especialista en Cortes Premium</p>
-                    <p class="barber-experience">12 años de experiencia</p>
-                    <div class="barber-description">
-                        <p>Barbero senior con técnicas avanzadas. Especializado en servicios premium y tratamientos capilares.</p>
-                    </div>
-                    <div class="barber-services">
-                        <h4>Servicios Realizados:</h4>
-                        <div class="services-count" id="services-barber-4">
-                            <span class="loading">Cargando...</span>
-                        </div>
+                        <p>Corte clásico, corte modernos, cortes para niños, cortes con diseños, arreglo de barba, limpiezas faciales, lavado de cabello.</p>
                     </div>
                 </div>
             </div>
@@ -188,4 +152,5 @@
 
     <script src="../js/barberos.js"></script>
 </body>
+
 </html>
